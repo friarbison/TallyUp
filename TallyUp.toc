@@ -1,0 +1,12 @@
+## Interface: 90207
+## Title: TallyUp |cff00aa006.0|r
+## Author: friarbison
+## Notes: Tracks resources collected. |cffB90A04Created by: Friarbison |r
+## Version: 1.0.0.16
+## SavedVariables: TallyupContent
+## SavedVariablesPerCharacter: TallyupPlayerContent
+## OptionalDeps: Ace3
+## X-Embeds: Ace3
+
+embed.xml
+TallyUp.lua

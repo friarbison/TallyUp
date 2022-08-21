@@ -1,0 +1,44 @@
+# TallyUp
+# Keep track of changes, if just by a brief summary
+# V1.0.0.0
+#   10/27/2021 - Initial Test Release
+# V1.0.0.1
+#   11/8/2021  - User request for color change.  Red was distracting so changed it to green.
+# V1.0.0.2
+#   11/15/2021 - Added frame
+# V1.0.0.3
+#   11/16/2021 - Removed the reset option, not needed since off is a duplication.
+# V1.0.0.4
+#   11/29/2021 - Unit testing complete and in beta mode
+# V1.0.0.5
+#   11/30/2021 - Frame scaling was incorrect
+# V1.0.0.6
+#   12/1/2021  - Added Leatherworking
+# V1.0.0.6
+#   12/28/2021  - Added some of Draenor resources
+# V1.0.0.8
+#   1/21/2022  - Added a clear button
+# V1.0.0.9
+#   2/11/2022  - Added the new crafting resources that will be coming with the 9.2 release
+# V1.0.0.10
+#   2/11/2022  - Changed Interface id to coincide with 9.2 release
+# V1.0.0.11
+#   2/11/2022  - Added the tooltip and saved variables.  Re-worked the 'clear' button.
+# V1.0.0.11a
+#   2/11/2022  - Problem with nFrame management.  Corrected.
+# V1.0.0.12
+#   3/10/2022  - Added pause/resume button to stop collection counts.
+#                Also, there is now a feature to change the font color.
+# V1.0.0.13
+#   6/11/2022  - Changed the interface id for the 9.2.5 patch.
+# V1.0.0.14
+#   7/11/2022  - Added a feature that will hide the interface when in combat.
+#                Also, fixed the initial display to correctly count items in bags.
+# V1.0.0.15
+#  8/17/2022  - Changed the Interface Id to 7 and added the version number.
+# V1.0.0.15b
+#  8/17/2022  - Migrating to WowUp platform.
+# v1.0.0.15c
+#  8/20/2022  -  Removed unused directory LibStub.
+# V1.0.0.16
+#  8/21/2022  -  Corrected a mistyped version number.
