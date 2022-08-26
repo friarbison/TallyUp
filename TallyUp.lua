@@ -1,5 +1,4 @@
 
-
 local TallyUp = LibStub("AceAddon-3.0"):NewAddon("TallyUp", "AceConsole-3.0", "AceEvent-3.0")
 local MainFrame1 = CreateFrame("Frame","MFrame1",UIParent, BackdropTemplateMixin and "BackdropTemplate")
 local MsgFrame = CreateFrame("Frame","msgFrame", MainFrame1, "BackdropTemplate")
@@ -13,7 +12,7 @@ local BlackFrame = CreateFrame("Frame","Black", ColorFrame, BackdropTemplateMixi
 local ClearButton = CreateFrame("Button", "ClrBtn", MainFrame1)
 local PauseButton = CreateFrame("Button", "PauseBtn", MainFrame1)
 local nFrame = CreateFrame("Frame","LbL", MainFrame1, "BackdropTemplate")
-local FHeight, FWidth, MainFrame1Shown, TallyUpStatus, TallyUpVERSION, FrameLocked = 35, 144, 0, "Inactive", "1.0.0.16", 0
+local FHeight, FWidth, MainFrame1Shown, TallyUpStatus, TallyUpVERSION, FrameLocked = 35, 144, 0, "Inactive", "1.0.0.17", 0
 local _TotalCount, ReLoad = 0, 0
 local lbl = {} 
 local STip = {}
@@ -230,8 +229,10 @@ local function reInitialize()
    end
    
    --print("Re-intit3")
-   for i, v in pairs(nFrame) do
-     nFrame = nil
+   if nFrame then                       --Added this if because nFrame is not initialized at the beginning
+      for i, v in pairs(nFrame) do      --and was locking up the commands that called this function.
+        nFrame = nil
+      end
    end
   
   --print("Re-intit4")
@@ -518,7 +519,9 @@ function TallyUp:OnCommand(input)
       if MainFrame1Shown == 0 then MainFrame1Shown = 1 end
       MainFrame1:Show()
     elseif input == "on" then
+      --print("Re-init called ...")
       reInitialize() 
+      --print("Re-init completed, Registering events ...")
       MainFrame1:RegisterEvent("CHAT_MSG_LOOT")
       MainFrame1:RegisterEvent("ENCOUNTER_START")
       MainFrame1:RegisterEvent("ENCOUNTER_END")
@@ -591,15 +594,6 @@ function TallyUp:OnDisable()
   self:RegisterEvent("ADDON_LOADED")
 end
 
-local function FrameLock(button)
-  if FrameLocked == 0 then
-     button.text:SetTextColor(1,0,0,1)
-     FrameLocked = 1
-   else
-     FrameLocked = 0
-     button.text:SetTextColor(1,1,1,1)
-   end
-end
 
 ColorFrame:SetPoint("TOPRIGHT", 80, 10)
 ColorFrame:SetSize(82,80)
@@ -752,19 +746,66 @@ MainFrame1:SetScript("OnDragStart", function()
 MainFrame1:SetScript("OnDragStop", function(self)
     MainFrame1:StopMovingOrSizing() end)
 MainFrame1:Hide()
+
+local function FrameLock(button, unlockedTexture)
+  if FrameLocked == 0 then    
+     button.text:SetText("TallyUp - Locked")
+     local lockedTexture = button:CreateTexture()
+     lockedTexture:SetTexture([[Interface\AddOns\TallyUp\Icons\Locked]])
+     lockedTexture:SetTexCoord(10, -0.3, -0.3, 1.3)
+     lockedTexture:SetAllPoints(button)
+     button:SetNormalTexture(lockedTexture)
+     FrameLocked = 1
+   else     
+     button.text:SetText("TallyUp - UnLocked")
+     button:SetNormalTexture(unlockedTexture)
+     FrameLocked = 0
+   end
+end
   
-local button = CreateFrame("button","FrameButton", MainFrame1, "UIPanelButtonTemplate")
+local button = CreateFrame("button","FrameButton", MainFrame1, "UIGoldBorderButtonTemplate")
 button:SetHeight(24)
-button:SetWidth(60)
-button:SetNormalTexture("Interface/BUTTONS/WHITE8X8") 
-button:GetNormalTexture():SetVertexColor(0.05, 0.3, 0.9, 0.57)
+button:SetWidth(180)
+--Odds and ends while ironing out the bumps with texture
+--mynormal:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
+--mynormal:SetTexture("Interface\AddOns\TallyUp\Icons\Locked")
+--mynormal:SetTexture("Interface/Buttons/LockButton-Locked-up")
+--mynormal:SetTexCoord(-4, 0.9, 0, 1)
+--button:SetNormalTexture([[Interface\AddOns\TallyUp\Icons\Locked]])
+--button:SetNormalTexture([[Interface\Buttons\UI-SquareButton-Up]]);
+
+local unlockedTexture = button:CreateTexture()
+unlockedTexture:SetTexture([[Interface\AddOns\TallyUp\Icons\UnLocked]])
+unlockedTexture:SetTexCoord(10, -0.3, -0.3, 1.3)
+unlockedTexture:SetAllPoints(button)
+button:SetNormalTexture(unlockedTexture)
+
+--Start off unlocked, only deal with this when locking.
+--It was causing both textures to be visible at startup.
+--Did not take time to trouble shoot.
+--local lockedTexture = button:CreateTexture()
+--lockedTexture:SetTexture([[Interface\AddOns\TallyUp\Icons\Locked]])
+--lockedTexture:SetTexCoord(10, -0.3, -0.3, 1.3)
+--lockedTexture:SetAllPoints(button)
+--button:SetNormalTexture(lockedTexture)
+
+--Causing too much screen jitter around the button, not necessary!
+--button:SetPushedTexture([[Interface\Buttons\UI-SquareButton-Down]]);
+--button:SetHighlightTexture([[Interface\Buttons\UI-Common-MouseHilight]]);
 button:SetPoint("BOTTOM", MainFrame1, "TOP", 0, 0)
 button.text = button:CreateFontString(nil,"OVERLAY", "GameFontNormal") 
 button.text:SetPoint("CENTER")
-button.text:SetTextColor(1,1,1,1)
-button:SetAlpha(0.40)
-button.text:SetText("Tallyup")
-button:SetScript("OnClick", function(self) FrameLock(button) end)
+if FrameLocked == 0 then  
+  button.text:SetText("Tallyup - UnLocked") 
+else
+  button.text:SetText("Tallyup - Locked")
+  local lockedTexture = button:CreateTexture()
+  lockedTexture:SetTexture([[Interface\AddOns\TallyUp\Icons\Locked]])
+  lockedTexture:SetTexCoord(10, -0.3, -0.3, 1.3)
+  lockedTexture:SetAllPoints(button)
+  button:SetNormalTexture(lockedTexture)
+end
+button:SetScript("OnClick", function(self) FrameLock(button, unlockedTexture) end)
 
 local TTip = CreateFrame("GameToolTip", "Locked", button, "GameTooltipTemplate")
 TTip:SetOwner(button, "ANCHOR_RIGHT")
@@ -889,23 +930,23 @@ ClearButton:SetHeight(15)
 ClearButton:SetText("clear")
 ClearButton:SetNormalFontObject("GameFontNormal")
 
-local ntex = ClearButton:CreateTexture()
-ntex:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
-ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-ntex:SetAllPoints()	
-ClearButton:SetNormalTexture(ntex)
+local cbntex = ClearButton:CreateTexture()
+cbntex:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
+cbntex:SetTexCoord(0, 0.625, 0, 0.6875)
+cbntex:SetAllPoints()	
+ClearButton:SetNormalTexture(cbntex)
 
-local htex = ClearButton:CreateTexture()
-htex:SetTexture("Interface/Buttons/UI-Panel-Button-Highlight")
-htex:SetTexCoord(0, 0.625, 0, 0.6875)
-htex:SetAllPoints()
-ClearButton:SetHighlightTexture(htex)
+local cbhtex = ClearButton:CreateTexture()
+cbhtex:SetTexture("Interface/Buttons/UI-Panel-Button-Highlight")
+cbhtex:SetTexCoord(0, 0.625, 0, 0.6875)
+cbhtex:SetAllPoints()
+ClearButton:SetHighlightTexture(cbhtex)
 
-local ptex = ClearButton:CreateTexture()
-ptex:SetTexture("Interface/Buttons/UI-Panel-Button-Down")
-ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-ptex:SetAllPoints()
-ClearButton:SetPushedTexture(ptex)
+local cbptex = ClearButton:CreateTexture()
+cbptex:SetTexture("Interface/Buttons/UI-Panel-Button-Down")
+cbptex:SetTexCoord(0, 0.625, 0, 0.6875)
+cbptex:SetAllPoints()
+ClearButton:SetPushedTexture(cbptex)
 
 ClearButton:SetScript("OnClick", function(self) ResetData() end)
 
@@ -918,22 +959,22 @@ PauseButton:SetHeight(15)
 PauseButton:SetText("pause")
 PauseButton:SetNormalFontObject("GameFontNormal")
 
-local ntex = PauseButton:CreateTexture()
-ntex:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
-ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-ntex:SetAllPoints()	
-PauseButton:SetNormalTexture(ntex)
+local pntex = PauseButton:CreateTexture()
+pntex:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
+pntex:SetTexCoord(0, 0.625, 0, 0.6875)
+pntex:SetAllPoints()	
+PauseButton:SetNormalTexture(pntex)
 
-local htex = PauseButton:CreateTexture()
-htex:SetTexture("Interface/Buttons/UI-Panel-Button-Highlight")
-htex:SetTexCoord(0, 0.625, 0, 0.6875)
-htex:SetAllPoints()
-PauseButton:SetHighlightTexture(htex)
+local phtex = PauseButton:CreateTexture()
+phtex:SetTexture("Interface/Buttons/UI-Panel-Button-Highlight")
+phtex:SetTexCoord(0, 0.625, 0, 0.6875)
+phtex:SetAllPoints()
+PauseButton:SetHighlightTexture(phtex)
 
-local ptex = PauseButton:CreateTexture()
-ptex:SetTexture("Interface/Buttons/UI-Panel-Button-Down")
-ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-ptex:SetAllPoints()
-PauseButton:SetPushedTexture(ptex)
+local pptex = PauseButton:CreateTexture()
+pptex:SetTexture("Interface/Buttons/UI-Panel-Button-Down")
+pptex:SetTexCoord(0, 0.625, 0, 0.6875)
+pptex:SetAllPoints()
+PauseButton:SetPushedTexture(pptex)
 
 PauseButton:SetScript("OnClick", function(self) CollectionState(PauseButton:GetText()) end)

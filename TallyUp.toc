@@ -2,7 +2,7 @@
 ## Title: TallyUp |cff00aa006.0|r
 ## Author: friarbison
 ## Notes: Tracks resources collected. |cffB90A04Created by: Friarbison |r
-## Version: 1.0.0.16
+## Version: 1.0.0.17
 ## SavedVariables: TallyupContent
 ## SavedVariablesPerCharacter: TallyupPlayerContent
 ## OptionalDeps: Ace3
