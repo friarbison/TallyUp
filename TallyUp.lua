@@ -9,83 +9,15 @@ local BlueFrame = CreateFrame("Frame","Blue", ColorFrame, BackdropTemplateMixin 
 local WhiteFrame = CreateFrame("Frame","White", ColorFrame, BackdropTemplateMixin and "BackdropTemplate")
 local BlackFrame = CreateFrame("Frame","Black", ColorFrame, BackdropTemplateMixin and "BackdropTemplate")
 
-local ClearButton = CreateFrame("Button", "ClrBtn", MainFrame1)
-local PauseButton = CreateFrame("Button", "PauseBtn", MainFrame1)
-local nFrame = CreateFrame("Frame","LbL", MainFrame1, "BackdropTemplate")
-local FHeight, FWidth, MainFrame1Shown, TallyUpStatus, TallyUpVERSION, FrameLocked = 35, 144, 0, "Inactive", "1.0.0.17", 0
+local ClearButton = CreateFrame("Button", "ClearButton", MainFrame1)
+local PauseButton = CreateFrame("Button", "PauseButton", MainFrame1)
+local nFrame = CreateFrame("Frame","highlightLabels", MainFrame1, "BackdropTemplate")
+local FHeight, FWidth, MainFrame1Shown, TallyUpStatus, TallyUpVERSION, FrameLocked = 35, 144, 0, "Inactive", "1.0.0.19", 0
 local _TotalCount, ReLoad = 0, 0
-local lbl = {} 
+local highlightLabels = {} 
 local STip = {}
 local cItemCnt = {}
 local _HName, Ln, _CName = "", 1, ""
-
---local Legion = {
---  -- Herbs
---  ["Yseralline Seed"] = 128304,
---  ["Felwort"] = 124106,
---  ["Starlight Rose"] = 124105,
---  ["Fjarnskaggl"] = 124104,
---  ["Foxflower"] = 124103,
---  ["Dreamleaf"] = 124102,
---  ["Aethril"] = 124101,
---  ["Astral Glory "] = 151565,
---  -- Metals/Ore
---  ["Leystone Ore"] = 123918,
---  ["Felslate"] = 123919,
---  ["Infernal Brimstone"] = 124444,
---  ["Ancient Mana "] = 1155,
---  ["Empyrium"] = 151564,  
---  -- Fish
---  ["Silver Mackerel"]	= 133607,
---  ["Cursed Queenfish"] = 124107,
---  ["Highmountain Salmon"] = 124109,
---  ["Mossgill Perch"] = 124108,
---  ["Stormray"] = 124110,
---  ["Runescale Koi"] = 124111,
---  ["Black Barracuda"] = 124112,
---  ["Leyscale Koi"] = 143748,  
---  -- Skinning
---  ["Fiendish Leather"] = 151566,
---  ["Stonehide Leather"] = 124113,
---  ["Stormscale"] = 124115,
---  ["Felhide"] = 124116,
---  ["Unbroken Tooth"] = 124439,
---  ["Unbroken Claw"] = 124438,
---  }
-
---local cItems = {
---  --Cata
-  
---  -- Herbs
---  ["Widowbloom"] = 168583, 
---  ["Vigil's Torch"] = 170554, 
---  ["Rising Glory"] = 168586, 
---  ["Marrowroot"] = 168589, 
---  ["Death Blossom"] = 169701, 
---  ["Nightshade"] = 171315,
---  -- Metals/Ore
---  ["Laestrite Ore"] = 171828, 
---  ["Elethium Ore"] = 171833, 
---  ["Solenium Ore"] = 171829, 
---  ["Oxxein Ore"] = 171830, 
---  ["Phaedrum Ore"] = 171831, 
---  ["Sinvyr Ore"] = 171832, 
---  ["Elementium Ore"] = 52185,
---  ["Pyrite Ore"] = 52183,
---  -- Fish
---  ["Lost Sole"] = 173032, 
---  ["Elysian Thade"] = 173037, 
---  ["Silvergill Pike"] = 173034, 
---  ["Pocked Bonefish"] = 173035, 
---  ["Iridescent Amberjack"] = 173033, 
---  ["Spinefin Piranha"] = 173036,
---  -- Skinning
---  ["Callous Hide"] = 172094,
---  ["Heavy Callous Hide"] = 172097,
---  ["Desolate Leather"] = 172089,
---  ["Heavy Desolate Leather"] = 172096,
---  ["Pallid Bone"] = 172092
---}
 
 local cItems  = {
   --cata
@@ -110,7 +42,6 @@ local cItems  = {
   ["Deepsea Sagefish"] = 0,
   ["Aberrant Voidfin"] = 0,
   ["Malformed Gnasher"] = 0,
-  --Shadowlands
   --Herbs
   ["Widowbloom"] = 0, 
   ["Vigil's Torch"] = 0, 
@@ -191,7 +122,7 @@ local function initItems()
   ReLoad = 1
   _TotalCount = 0
   cItemCnt = {}
-  lbl = {}
+  highlightLabels = {}
   for index, data in pairs(cItems) do
     local cntr = GetItemCount(index)
     if cntr == nil then
@@ -210,40 +141,39 @@ end
 
 local function reInitialize() 
   local lblRows
-   --print("reInitialize started")
-  
-  for i, v in pairs(lbl) do
+  --print("reInitialize started")
+
+  for i, v in pairs(highlightLabels) do
     local nf = v
     v:Hide()
     v:SetParent(nil) 
-   end
-   
-   --print("Re-intit1")
-   for i, v in pairs(lbl) do
-     lbl[i] = nil
-   end
-   
-   --print("Re-intit2")
-   for i, v in pairs(cItemCnt) do
-     cItemCnt[i] = nil
-   end
-   
-   --print("Re-intit3")
-   if nFrame then                       --Added this if because nFrame is not initialized at the beginning
-      for i, v in pairs(nFrame) do      --and was locking up the commands that called this function.
-        nFrame = nil
-      end
-   end
-  
+  end
+
+  --print("Re-intit1")
+  for i, v in pairs(highlightLabels) do
+    highlightLabels[i] = nil
+  end
+
+  --print("Re-intit2")
+  for i, v in pairs(cItemCnt) do
+    cItemCnt[i] = nil
+  end
+
+  --print("Re-intit3")
+  if nFrame then                       --Added this if because nFrame is not initialized at the beginning
+    for i, v in pairs(nFrame) do      --and was locking up the commands that called this function.
+      nFrame = nil
+    end
+  end
+
   --print("Re-intit4")
   cItemCnt = {}
-  lbl = {}
+  highlightLabels = {}
   initItems()
-  
+
   --print("Re-intit5")
   MainFrame1:SetSize(180,24)
   FHeight = 24
-  --FWidth = 180
   --print("reInitialize completed")
 end
 
@@ -277,11 +207,9 @@ end
 
 local function AddToIt(nName, nCnt)
   local newindex, newCnt
-  
-  --nNameMod = formatName(nName, "%+")
+
   for index, data in pairs(cItemCnt) do
     --print("ADDToIt: nName: " .. nName .. ", index:  " .. index)
-    --newindex = formatName(index, "%+")
 
     if string.find(index, nName, 1, 1) then
 --      print("1. Type: " .. type(cItemCnt[index]))
@@ -297,7 +225,6 @@ local function AddToIt(nName, nCnt)
   end
   return nil
 end
-
 
 local function ShowMyPoints(mframe)
   local point, relativeTo, relativePoint, xOfs, yOfs
@@ -319,7 +246,7 @@ end
 
 local function ResetData()
   local point, relativeTo, relativePoint, xOfs, yOfs = MainFrame1:GetPoint()
-  
+
   MainFrame1:UnregisterEvent("CHAT_MSG_LOOT")
   if MainFrame1Shown == 1 then MainFrame1:Hide() MainFrame1Shown=0 end
   reInitialize()    
@@ -334,13 +261,6 @@ local function SetFrameWidth(HerbName)
   if fw > FWidth then
     FWidth = fw
   end
-  --[[if PauseButton:GetText() == "resume" then
-    PauseButton:SetPoint("RIGHT", MainFrame1, "BOTTOM", FWidth - 57, 10)
-    PauseButton:SetWidth(50)
-  else
-    PauseButton:SetPoint("LEFT", MainFrame1, "BOTTOM", FWidth - 57, 10)
-    PauseButton:SetWidth(40)
-  end]]--
 end
 
 local function SetFrameHeight(fh)
@@ -391,9 +311,9 @@ end
 local function AddNewEntry(HerbName, HerbCount, LineNum)
   local useName = nil
   local tt = nil
-  
+
   if LineNum <= 1 then initItems() end
-  
+
   useName = GetUseName(HerbName)
   SetFrameWidth(useName)  
   SetFrameHeight(LineNum)
@@ -401,19 +321,8 @@ local function AddNewEntry(HerbName, HerbCount, LineNum)
   --print("AE: Frame x,y are: " .. FWidth .. " and " .. FHeight)
   MainFrame1:SetSize(FWidth, FHeight)
   nFrame = CreateFrame("Frame", HerbName, MainFrame1, "BackdropTemplate") -- BackdropTemplateMixin and "BackdropTemplate"))
-  --tt = CreateFrame("GameToolTip", HerbName, nil, "GameTooltipTemplate") 
-  --tt:SetOwner(MainFrame1, "ANCHOR_RIGHT", 0, 0)
-
-  --table.insert(STip, LineNum, tt)
   nFrame:SetPoint("TOPLEFT", 1, (12 - ((LineNum ) * 18)) )
   nFrame:SetSize(196,20)
---  nFrame:SetBackdrop({
---    bgFile = "Interface/Tooltips/UI-Tooltip-Background",
---    edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
---    edgeSize = 10,
---    insets = { left = 1, right = 1, top = 1, bottom = 1 },
---  })
---  nFrame:SetBackdropColor(0, 0, 1, .33)
   nFrame.text = nFrame:CreateFontString(nil,"ARTWORK") 
   nFrame.text:SetFont("Fonts\\ARIALN.ttf", 16, "OUTLINE")
   nFrame.text:SetPoint("LEFT", 2, 0)
@@ -427,19 +336,19 @@ local function AddNewEntry(HerbName, HerbCount, LineNum)
       else
         SelectColor(2, HerbName)
       end
-      end)
-  table.insert(lbl, nFrame)
+    end)
+  table.insert(highlightLabels, nFrame)
 end
 
 local function displayupdate(show, HerbName, HerbCount)
   local cCnt, lblRows = 1, 0
   if show == 1 then
     HerbCount = AddToIt(HerbName, HerbCount)
-    for i, v in pairs(lbl) do 
+    for i, v in pairs(highlightLabels) do 
       lblRows = lblRows + 1
       dbgName1 = v.text:GetText()
       --if ReLoad == 1 then
-       -- print("INSIDE: Row: " .. lblRows .. " - <" .. HerbName .. ">.  ReLoad: " .. tostring(ReLoad))
+      -- print("INSIDE: Row: " .. lblRows .. " - <" .. HerbName .. ">.  ReLoad: " .. tostring(ReLoad))
       --end
       if v:GetName() == HerbName then
         v.text:SetText(formatHerbName(dbgName1, "%.") .. "..........." .. tostring(HerbCount))
@@ -462,18 +371,16 @@ local function CollectionState(state)
   if state == "pause" then
     PauseButton:SetText("resume")
     MainFrame1:UnregisterEvent("CHAT_MSG_LOOT")
-   -- PauseButton:SetPoint("RIGHT", MainFrame1, "BOTTOM", FWidth - 57, 10)
     PauseButton:SetWidth(50)
   else
     PauseButton:SetText("pause")
     MainFrame1:RegisterEvent("CHAT_MSG_LOOT")
-   -- PauseButton:SetPoint("RIGHT", MainFrame1, "BOTTOM", FWidth - 57, 10)
     PauseButton:SetWidth(40)
   end
 end    
 
 local function StripStr(str)
-   return str:gsub("%s+", "")
+  return str:gsub("%s+", "")
 end
 
 local options = {
@@ -485,29 +392,29 @@ local options = {
       order = 1,
       type = "description",
       name = "\"TallyUp\" with no commands toggles the on/off status.\n" ..
-          "        \"/TallyUp on\" enables the display.\n"   ..
-          "        \"/TallyUp off\" disables the display.\n" ..
-          "        \"/TallyUp reset\" clears frame content and values.\n" ..
-          "        \"/TallyUp h\" or \"?\" or \"help\" shows valid commands.\n" ..
-          "        \"/TallyUp v\" or \"version\" shows current version.\n"
+      "        \"/TallyUp on\" enables the display.\n"   ..
+      "        \"/TallyUp off\" disables the display.\n" ..
+      "        \"/TallyUp reset\" clears frame content and values.\n" ..
+      "        \"/TallyUp h\" or \"?\" or \"help\" shows valid commands.\n" ..
+      "        \"/TallyUp v\" or \"version\" shows current version.\n"
     }
   },
 }
 
 local defaults = {
-    profile = {
-        vStatus = false,
-    }
+  profile = {
+    vStatus = false,
+  }
 }
 
 function ShowCommands()
   print(" TallyUp addon command line options:\n" ..
-          "        \"TallyUp\" with no commands toggles the on/off status.\n" ..
-          "        \"/TallyUp on\" enables the display.\n"   ..
-          "        \"/TallyUp off\" disables the display.\n" ..
-          "        \"/TallyUp reset\" clears frame content and values.\n" ..
-          "        \"/TallyUp h\" or \"?\" or \"help\" shows valid commands.\n" ..
-          "        \"/TallyUp v\" or \"version\" shows current version.\n")
+    "        \"TallyUp\" with no commands toggles the on/off status.\n" ..
+    "        \"/TallyUp on\" enables the display.\n"   ..
+    "        \"/TallyUp off\" disables the display.\n" ..
+    "        \"/TallyUp reset\" clears frame content and values.\n" ..
+    "        \"/TallyUp h\" or \"?\" or \"help\" shows valid commands.\n" ..
+    "        \"/TallyUp v\" or \"version\" shows current version.\n")
 end
 
 function TallyUp:OnCommand(input)
@@ -574,7 +481,6 @@ function TallyUp:OnInitialize()
   LibStub("AceConfigDialog-3.0"):SetDefaultSize("TallyUp", 400, 250)
   self:RegisterChatCommand("TallyUp", "OnCommand")
   self.Db = LibStub("AceDB-3.0"):New("TallyupContent", defaults, true)
-  
 end
 
 function TallyUp:ADDON_LOADED()   
@@ -594,15 +500,14 @@ function TallyUp:OnDisable()
   self:RegisterEvent("ADDON_LOADED")
 end
 
-
 ColorFrame:SetPoint("TOPRIGHT", 80, 10)
 ColorFrame:SetSize(82,80)
 ColorFrame:SetBackdrop({
-	bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",  --"Interface/Tooltips/UI-Tooltip-Background",
-	edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border", -- "Interface/Tooltips/UI-Tooltip-Border",
-	edgeSize = 14,
-	insets = { left = 2, right = 2, top = 2, bottom = 2 },
-})
+    bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",  --"Interface/Tooltips/UI-Tooltip-Background",
+    edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border", -- "Interface/Tooltips/UI-Tooltip-Border",
+    edgeSize = 14,
+    insets = { left = 2, right = 2, top = 2, bottom = 2 },
+  })
 ColorFrame:SetBackdropColor(1, 1, 1, 1) 
 ColorFrame:SetFrameLevel(500)
 ColorFrame:Hide()
@@ -610,105 +515,105 @@ ColorFrame:Hide()
 RedFrame:SetPoint("TOPLEFT", 6, -5)
 RedFrame:SetSize(70,14)
 RedFrame:SetBackdrop({
-  bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-	edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-	edgeSize = 1,
-	insets = { left = 0, right = 0, top = 0, bottom = 0 },
-})
+    bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+    edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+    edgeSize = 1,
+    insets = { left = 0, right = 0, top = 0, bottom = 0 },
+  })
 RedFrame:SetBackdropColor(1, 0, 0, 1) 
 RedFrame:SetFrameLevel(600)
 RedFrame:SetScript("OnMouseDown", function(self, btn) 
-     for i, v in pairs(lbl) do
-       if v:GetName() == _CName then
-         v.text:SetTextColor(1,0,0,1)
-         --print("Setting Color to Red on " .. _CName)
-         break
-       end
-     end  
-     ColorFrame:Hide()
-   end)
+    for i, v in pairs(highlightLabels) do
+      if v:GetName() == _CName then
+        v.text:SetTextColor(1,0,0,1)
+        --print("Setting Color to Red on " .. _CName)
+        break
+      end
+    end  
+    ColorFrame:Hide()
+  end)
 RedFrame:Hide()
 
 GreenFrame:SetPoint("TOpLEFT", 6, -19)
 GreenFrame:SetSize(70,14)
 GreenFrame:SetBackdrop({
-	bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-	edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-	edgeSize = 1,
-	insets = { left = 0, right = 0, top = 0, bottom = 0 },
-})
+    bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+    edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+    edgeSize = 1,
+    insets = { left = 0, right = 0, top = 0, bottom = 0 },
+  })
 GreenFrame:SetBackdropColor(0, 1, 0, 1) 
 GreenFrame:SetFrameLevel(600)
 GreenFrame:SetScript("OnMouseDown", function(self, btn) 
-     for i, v in pairs(lbl) do
-       if v:GetName() == _CName then
-         --print("Setting Color to Green on " .. _CName)
-         v.text:SetTextColor(0,1,0,1)
-         break
-       end
-     end  
-     ColorFrame:Hide()
-   end)
+    for i, v in pairs(highlightLabels) do
+      if v:GetName() == _CName then
+        --print("Setting Color to Green on " .. _CName)
+        v.text:SetTextColor(0,1,0,1)
+        break
+      end
+    end  
+    ColorFrame:Hide()
+  end)
 GreenFrame:Hide() 
 
 BlueFrame:SetPoint("TOPLEFT", 6, -33)
 BlueFrame:SetSize(70,14)
 BlueFrame:SetBackdrop({
-	bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-	edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-	edgeSize = 1,
-	insets = { left = 0, right = 0, top = 0, bottom = 0 },
-})
+    bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+    edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+    edgeSize = 1,
+    insets = { left = 0, right = 0, top = 0, bottom = 0 },
+  })
 BlueFrame:SetBackdropColor(0, 0, 1, 1)
 BlueFrame:SetScript("OnMouseDown", function(self, btn) 
-     for i, v in pairs(lbl) do
-       if v:GetName() == _CName then
-         v.text:SetTextColor(0,0,1,1)
-         break
-       end
-     end  
-     ColorFrame:Hide()
-   end)
- BlueFrame:Hide()
- 
+    for i, v in pairs(highlightLabels) do
+      if v:GetName() == _CName then
+        v.text:SetTextColor(0,0,1,1)
+        break
+      end
+    end  
+    ColorFrame:Hide()
+  end)
+BlueFrame:Hide()
+
 WhiteFrame:SetPoint("TOPLEFT", 6, -47)
 WhiteFrame:SetSize(70,14)
 WhiteFrame:SetBackdrop({
-	bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-	edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-	edgeSize = 1,
-	insets = { left = 0, right = 0, top = 0, bottom = 0 },
-})
+    bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+    edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+    edgeSize = 1,
+    insets = { left = 0, right = 0, top = 0, bottom = 0 },
+  })
 WhiteFrame:SetBackdropColor(1, 1, 1, 1) 
 WhiteFrame:SetScript("OnMouseDown", function(self, btn) 
-     for i, v in pairs(lbl) do
-       if v:GetName() == _CName then
-         v.text:SetTextColor(1,1,1,1)
-         break
-       end
-     end  
-     ColorFrame:Hide()
-   end)
+    for i, v in pairs(highlightLabels) do
+      if v:GetName() == _CName then
+        v.text:SetTextColor(1,1,1,1)
+        break
+      end
+    end  
+    ColorFrame:Hide()
+  end)
 WhiteFrame:Hide()
- 
+
 BlackFrame:SetPoint("TOPLEFT", 6, -61)
 BlackFrame:SetSize(70,14)
 BlackFrame:SetBackdrop({
-	bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-	edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-	edgeSize = 1,
-	insets = { left = 0, right = 0, top = 0, bottom = 0 },
-})
+    bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+    edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+    edgeSize = 1,
+    insets = { left = 0, right = 0, top = 0, bottom = 0 },
+  })
 BlackFrame:SetBackdropColor(0, 0, 0, 1) 
 BlackFrame:SetScript("OnMouseDown", function(self, btn) 
-     for i, v in pairs(lbl) do
-       if v:GetName() == _CName then
-         v.text:SetTextColor(0,0,0,1)
-         break
-       end
-     end  
-     ColorFrame:Hide()
-   end) 
+    for i, v in pairs(highlightLabels) do
+      if v:GetName() == _CName then
+        v.text:SetTextColor(0,0,0,1)
+        break
+      end
+    end  
+    ColorFrame:Hide()
+  end) 
 BlackFrame:Hide() 
 
 MsgFrame:SetPoint("CENTER", 110, 34)
@@ -717,11 +622,11 @@ MsgFrame.text:SetFont("Fonts\\FRIZQT__.TTF", 16) --SetFont("Fonts\\ARIALN.ttf", 
 MsgFrame.text:SetPoint("LEFT", 10, 0)
 MsgFrame:SetSize(160,28)
 MsgFrame:SetBackdrop({
-	bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",  --"Interface/Tooltips/UI-Tooltip-Background",
-	edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border", -- "Interface/Tooltips/UI-Tooltip-Border",
-	edgeSize = 14,
-	insets = { left = 2, right = 2, top = 2, bottom = 2 },
-})
+    bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",  --"Interface/Tooltips/UI-Tooltip-Background",
+    edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border", -- "Interface/Tooltips/UI-Tooltip-Border",
+    edgeSize = 14,
+    insets = { left = 2, right = 2, top = 2, bottom = 2 },
+  })
 MsgFrame:SetBackdropColor(1, 1, 1, 1) 
 MsgFrame:SetFrameLevel(999)
 MsgFrame:Hide()
@@ -729,11 +634,11 @@ MsgFrame:Hide()
 MainFrame1:SetPoint("CENTER", 0, 0)
 MainFrame1:SetSize(144,32)
 MainFrame1:SetBackdrop({
-	bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-	edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-	edgeSize = 10,
-	insets = { left = 1, right = 1, top = 1, bottom = 1 },
-})
+    bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+    edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+    edgeSize = 10,
+    insets = { left = 1, right = 1, top = 1, bottom = 1 },
+  })
 MainFrame1:SetBackdropColor(0, 0, 1, .33)
 MainFrame1:SetMovable(true)
 MainFrame1:EnableMouse(true)
@@ -745,108 +650,106 @@ MainFrame1:SetScript("OnDragStart", function()
   end)
 MainFrame1:SetScript("OnDragStop", function(self)
     MainFrame1:StopMovingOrSizing() end)
-MainFrame1:Hide()
+  MainFrame1:Hide()
 
-local function FrameLock(button, unlockedTexture)
-  if FrameLocked == 0 then    
-     button.text:SetText("TallyUp - Locked")
-     local lockedTexture = button:CreateTexture()
-     lockedTexture:SetTexture([[Interface\AddOns\TallyUp\Icons\Locked]])
-     lockedTexture:SetTexCoord(10, -0.3, -0.3, 1.3)
-     lockedTexture:SetAllPoints(button)
-     button:SetNormalTexture(lockedTexture)
-     FrameLocked = 1
-   else     
-     button.text:SetText("TallyUp - UnLocked")
-     button:SetNormalTexture(unlockedTexture)
-     FrameLocked = 0
-   end
-end
-  
-local button = CreateFrame("button","FrameButton", MainFrame1, "UIGoldBorderButtonTemplate")
-button:SetHeight(24)
-button:SetWidth(180)
+  local function FrameLock(tBtn, unlockedTexture)
+    if FrameLocked == 0 then    
+      tBtn.text:SetText("TallyUp - Locked")
+      local lockedTexture = tBtn:CreateTexture()
+      lockedTexture:SetTexture([[Interface\AddOns\TallyUp\Icons\Locked]])
+      lockedTexture:SetTexCoord(10, -0.3, -0.3, 1.3)
+      lockedTexture:SetAllPoints(tBtn)
+      tBtn:SetNormalTexture(lockedTexture)
+      FrameLocked = 1
+    else     
+      tBtn.text:SetText("TallyUp - UnLocked")
+      tBtn:SetNormalTexture(unlockedTexture)
+      FrameLocked = 0
+    end
+  end
+
+  local TitleButton = CreateFrame("Button","TitleButton", MainFrame1, "UIGoldBorderButtonTemplate")
+  TitleButton:SetHeight(24)
+  TitleButton:SetWidth(180)
 --Odds and ends while ironing out the bumps with texture
 --mynormal:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
 --mynormal:SetTexture("Interface\AddOns\TallyUp\Icons\Locked")
 --mynormal:SetTexture("Interface/Buttons/LockButton-Locked-up")
 --mynormal:SetTexCoord(-4, 0.9, 0, 1)
---button:SetNormalTexture([[Interface\AddOns\TallyUp\Icons\Locked]])
---button:SetNormalTexture([[Interface\Buttons\UI-SquareButton-Up]]);
+--TitleButton:SetNormalTexture([[Interface\AddOns\TallyUp\Icons\Locked]])
+--TitleButton:SetNormalTexture([[Interface\Buttons\UI-SquareButton-Up]]);
 
-local unlockedTexture = button:CreateTexture()
-unlockedTexture:SetTexture([[Interface\AddOns\TallyUp\Icons\UnLocked]])
-unlockedTexture:SetTexCoord(10, -0.3, -0.3, 1.3)
-unlockedTexture:SetAllPoints(button)
-button:SetNormalTexture(unlockedTexture)
+  local unlockedTexture = TitleButton:CreateTexture()
+  unlockedTexture:SetTexture([[Interface\AddOns\TallyUp\Icons\UnLocked]])
+  unlockedTexture:SetTexCoord(10, -0.3, -0.3, 1.3)
+  unlockedTexture:SetAllPoints(TitleButton)
+  TitleButton:SetNormalTexture(unlockedTexture)
 
 --Start off unlocked, only deal with this when locking.
 --It was causing both textures to be visible at startup.
 --Did not take time to trouble shoot.
---local lockedTexture = button:CreateTexture()
+--local lockedTexture = TitleButton:CreateTexture()
 --lockedTexture:SetTexture([[Interface\AddOns\TallyUp\Icons\Locked]])
 --lockedTexture:SetTexCoord(10, -0.3, -0.3, 1.3)
---lockedTexture:SetAllPoints(button)
---button:SetNormalTexture(lockedTexture)
+--lockedTexture:SetAllPoints(TitleButton)
+--TitleButton:SetNormalTexture(lockedTexture)
 
 --Causing too much screen jitter around the button, not necessary!
---button:SetPushedTexture([[Interface\Buttons\UI-SquareButton-Down]]);
---button:SetHighlightTexture([[Interface\Buttons\UI-Common-MouseHilight]]);
-button:SetPoint("BOTTOM", MainFrame1, "TOP", 0, 0)
-button.text = button:CreateFontString(nil,"OVERLAY", "GameFontNormal") 
-button.text:SetPoint("CENTER")
-if FrameLocked == 0 then  
-  button.text:SetText("Tallyup - UnLocked") 
-else
-  button.text:SetText("Tallyup - Locked")
-  local lockedTexture = button:CreateTexture()
-  lockedTexture:SetTexture([[Interface\AddOns\TallyUp\Icons\Locked]])
-  lockedTexture:SetTexCoord(10, -0.3, -0.3, 1.3)
-  lockedTexture:SetAllPoints(button)
-  button:SetNormalTexture(lockedTexture)
-end
-button:SetScript("OnClick", function(self) FrameLock(button, unlockedTexture) end)
-
-local TTip = CreateFrame("GameToolTip", "Locked", button, "GameTooltipTemplate")
-TTip:SetOwner(button, "ANCHOR_RIGHT")
-
-button:SetScript("OnEnter", function()
-    if FrameLocked == 0 then
-      TTip:AddLine("Click to lock Frame", 1,0,0,1)
-    else
-      TTip:AddLine("Click to move Frame", 1,0,0,1)
-    end
-    
-    TTip:Show()
-  end);
-  button:SetScript("OnLeave", function()
-      TTip:Hide();
-      TTip:SetOwner(button, "ANCHOR_RIGHT")
-  end);
-  
-
-
-local function CheckGlobalName(hname, sep)
-  --print("CheckGlobalName started")
-  for i in string.gmatch(hname, "([^"..sep.."]+)") do
-    iStr1 = i
-    --print("CheckGlobalName returning ", iStr1)
-    return iStr1
+--TitleButton:SetPushedTexture([[Interface\Buttons\UI-SquareButton-Down]]);
+--TitleButton:SetHighlightTexture([[Interface\Buttons\UI-Common-MouseHilight]]);
+  TitleButton:SetPoint("BOTTOM", MainFrame1, "TOP", 0, 0)
+  TitleButton.text = TitleButton:CreateFontString(nil,"OVERLAY", "GameFontNormal") 
+  TitleButton.text:SetPoint("CENTER")
+  if FrameLocked == 0 then  
+    TitleButton.text:SetText("Tallyup - UnLocked") 
+  else
+    TitleButton.text:SetText("Tallyup - Locked")
+    local lockedTexture = TitleButton:CreateTexture()
+    lockedTexture:SetTexture([[Interface\AddOns\TallyUp\Icons\Locked]])
+    lockedTexture:SetTexCoord(10, -0.3, -0.3, 1.3)
+    lockedTexture:SetAllPoints(TitleButton)
+    TitleButton:SetNormalTexture(lockedTexture)
   end
-  --print("CheckGlobalName completed")
-end
+  TitleButton:SetScript("OnClick", function(self) FrameLock(TitleButton, unlockedTexture) end)
 
-function TallyUp:mysim (h, c)
-  local ncntr = 1
-  print("Debugging")
-  ShowMyPoints(MainFrame1)
-  print("Start for loop")
-  for i,v in pairs(cItemCnt) do
+  local TTip = CreateFrame("GameToolTip", "Locked", TitleButton, "GameTooltipTemplate")
+  TTip:SetOwner(TitleButton, "ANCHOR_RIGHT")
+
+  TitleButton:SetScript("OnEnter", function()
+      if FrameLocked == 0 then
+        TTip:AddLine("Click to lock Frame", 1,0,0,1)
+      else
+        TTip:AddLine("Click to move Frame", 1,0,0,1)
+      end
+
+      TTip:Show()
+    end);
+  TitleButton:SetScript("OnLeave", function()
+      TTip:Hide();
+      TTip:SetOwner(TitleButton, "ANCHOR_RIGHT")
+    end);
+
+  local function CheckGlobalName(hname, sep)
+    --print("CheckGlobalName started")
+    for i in string.gmatch(hname, "([^"..sep.."]+)") do
+      iStr1 = i
+      --print("CheckGlobalName returning ", iStr1)
+      return iStr1
+    end
+    --print("CheckGlobalName completed")
+  end
+
+  function TallyUp:mysim (h, c)
+    local ncntr = 1
+    print("Debugging")
+    ShowMyPoints(MainFrame1)
+    print("Start for loop")
+    for i,v in pairs(cItemCnt) do
       print("1- " .. i .. ", " .. v)
       hname = CheckGlobalName(i, "%+")
       print("2. [" .. ncntr .. "] h is <".. hname ..">")
       ncntr = ncntr + 1
-      --print("HerbName: <" .. HerbName .. "> and hname: <" .. hname .. ">")
+      print("HerbName: <" .. HerbName .. "> and hname: <" .. hname .. ">")
       print("3. hname is <" .. hname .. ">")
       if (h .. " ") == hname then
         _HName = i
@@ -859,122 +762,124 @@ function TallyUp:mysim (h, c)
         HerbCnt = nil
         break
       end
+    end
+    print("End for loop")
+  end  
+
+  local function checkStatus(stat)
+    --print("checkStatus")
+    if TallyUpStatus == "Active" then
+      if stat == 1 then
+        MainFrame1:Hide()
+        return 1 
+      else
+        MainFrame1:Show()
+        return 0
+      end
+    else
+      return 0
+    end
   end
-  print("End for loop")
-end  
 
-local function checkStatus(stat)
-  --print("cheskStatus")
-  if stat == 1 then
-    MainFrame1:Hide()
-    return 1
- 
-  else
-    MainFrame1:Show()
-    return 0
-  end
-  return 0
-end
+  MainFrame1:SetScript("OnEvent", function(self, event, ...) 
+      local rtn = 0
+      --print("Event is " .. event)
+      if event == "PLAYER_REGEN_ENABLED" then 
+        rtn = checkStatus(0)
+      elseif event == "PLAYER_REGEN_DISABLED" then
+        rtn = checkStatus(1)
+      elseif rtn == 0 then
 
-MainFrame1:SetScript("OnEvent", function(self, event, ...) 
-    local rtn = 0
-  --print("Event is " .. event)
-  if event == "PLAYER_REGEN_ENABLED" then 
-    rtn = checkStatus(0)
-  elseif event == "PLAYER_REGEN_DISABLED" then
-    rtn = checkStatus(1)
-  elseif rtn == 0 then
+        local tStr, HerbName, HerbStr, HerbCnt, beginning1, beginning2, ending1, ending2, PlayerName, PlayerNameLooting, hname
+        _HName = nil
+        HerbStr = select(1, ...)
+        PlayerNameLooting = select(2, ...)
+        PlayerName = UnitName("player") .. "-" .. GetRealmName():gsub("%s+", "")
 
-      local tStr, HerbName, HerbStr, HerbCnt, beginning1, beginning2, ending1, ending2, PlayerName, PlayerNameLooting, hname
-      _HName = nil
-      HerbStr = select(1, ...)
-      PlayerNameLooting = select(2, ...)
-      PlayerName = UnitName("player") .. "-" .. GetRealmName():gsub("%s+", "")
-
-      if PlayerNameLooting == PlayerName then 
-        beginning1, beginning2=string.find(HerbStr, "%[")
-        ending1, ending2=string.find(HerbStr,"%]")
-        HerbName=string.sub(HerbStr,(beginning2 + 1), (ending1 - 1))
-        tStr = string.sub(HerbStr, (string.len(HerbStr) - 2) , string.len(HerbStr))
-        for c in string.gmatch(tStr, '.') do  
-          --print("c. :" .. c .. ", " .. type(c) .. " <" .. tStr .. ">")
-          if tonumber(c) ~= nil then
-            if HerbCnt == nil then
-              HerbCnt = c
-            else
-              HerbCnt = HerbCnt .. c
+        if PlayerNameLooting == PlayerName then 
+          beginning1, beginning2=string.find(HerbStr, "%[")
+          ending1, ending2=string.find(HerbStr,"%]")
+          HerbName=string.sub(HerbStr,(beginning2 + 1), (ending1 - 1))
+          tStr = string.sub(HerbStr, (string.len(HerbStr) - 2) , string.len(HerbStr))
+          for c in string.gmatch(tStr, '.') do  
+            --print("c. :" .. c .. ", " .. type(c) .. " <" .. tStr .. ">")
+            if tonumber(c) ~= nil then
+              if HerbCnt == nil then
+                HerbCnt = c
+              else
+                HerbCnt = HerbCnt .. c
+              end
             end
-          end
-        end 
+          end 
 
-        for i,v in pairs(cItemCnt) do
-          hname = CheckGlobalName(i, "%+")
-          if (HerbName .. " ") == hname then
-            _HName = i
-            if HerbCnt == nil then
-              HerbCnt = 1
+          for i,v in pairs(cItemCnt) do
+            hname = CheckGlobalName(i, "%+")
+            if (HerbName .. " ") == hname then
+              _HName = i
+              if HerbCnt == nil then
+                HerbCnt = 1
+              end
+              displayupdate(1, HerbName, HerbCnt)
+              HerbCnt = nil
+              break
             end
-            displayupdate(1, HerbName, HerbCnt)
-            HerbCnt = nil
-            break
           end
         end
       end
-    end
-end)
+    end)
 
-ClearButton:SetPoint("CENTER", MainFrame1, "BOTTOM", 0, 10)
-ClearButton:SetWidth(40)
-ClearButton:SetHeight(15)
+  ClearButton:SetPoint("CENTER", MainFrame1, "BOTTOM", 0, 10)
+  ClearButton:SetWidth(40)
+  ClearButton:SetHeight(15)
 
-ClearButton:SetText("clear")
-ClearButton:SetNormalFontObject("GameFontNormal")
+  ClearButton:SetText("clear")
+  ClearButton:SetNormalFontObject("GameFontNormal")
 
-local cbntex = ClearButton:CreateTexture()
-cbntex:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
-cbntex:SetTexCoord(0, 0.625, 0, 0.6875)
-cbntex:SetAllPoints()	
-ClearButton:SetNormalTexture(cbntex)
+  local cbntex = ClearButton:CreateTexture()
+  cbntex:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
+  cbntex:SetTexCoord(0, 0.625, 0, 0.6875)
+  cbntex:SetAllPoints()	
+  ClearButton:SetNormalTexture(cbntex)
 
-local cbhtex = ClearButton:CreateTexture()
-cbhtex:SetTexture("Interface/Buttons/UI-Panel-Button-Highlight")
-cbhtex:SetTexCoord(0, 0.625, 0, 0.6875)
-cbhtex:SetAllPoints()
-ClearButton:SetHighlightTexture(cbhtex)
+  local cbhtex = ClearButton:CreateTexture()
+  cbhtex:SetTexture("Interface/Buttons/UI-Panel-Button-Highlight")
+  cbhtex:SetTexCoord(0, 0.625, 0, 0.6875)
+  cbhtex:SetAllPoints()
+  ClearButton:SetHighlightTexture(cbhtex)
 
-local cbptex = ClearButton:CreateTexture()
-cbptex:SetTexture("Interface/Buttons/UI-Panel-Button-Down")
-cbptex:SetTexCoord(0, 0.625, 0, 0.6875)
-cbptex:SetAllPoints()
-ClearButton:SetPushedTexture(cbptex)
+  local cbptex = ClearButton:CreateTexture()
+  cbptex:SetTexture("Interface/Buttons/UI-Panel-Button-Down")
+  cbptex:SetTexCoord(0, 0.625, 0, 0.6875)
+  cbptex:SetAllPoints()
+  ClearButton:SetPushedTexture(cbptex)
 
-ClearButton:SetScript("OnClick", function(self) ResetData() end)
+  ClearButton:SetScript("OnClick", function(self) ResetData() end)
 
-ClearButton:Hide()
+  ClearButton:Hide()
 
-PauseButton:SetPoint("BOTTOMLEFT", MainFrame1, 3, 3) --(FHeight - 15), 1)
-PauseButton:SetWidth(40)
-PauseButton:SetHeight(15)
+  PauseButton:SetPoint("BOTTOMLEFT", MainFrame1, 3, 3) --(FHeight - 15), 1)
+  PauseButton:SetWidth(40)
+  PauseButton:SetHeight(15)
 
-PauseButton:SetText("pause")
-PauseButton:SetNormalFontObject("GameFontNormal")
+  PauseButton:SetText("pause")
+  PauseButton:SetNormalFontObject("GameFontNormal")
 
-local pntex = PauseButton:CreateTexture()
-pntex:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
-pntex:SetTexCoord(0, 0.625, 0, 0.6875)
-pntex:SetAllPoints()	
-PauseButton:SetNormalTexture(pntex)
+  local pntex = PauseButton:CreateTexture()
+  pntex:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
+  pntex:SetTexCoord(0, 0.625, 0, 0.6875)
+  pntex:SetAllPoints()	
+  PauseButton:SetNormalTexture(pntex)
 
-local phtex = PauseButton:CreateTexture()
-phtex:SetTexture("Interface/Buttons/UI-Panel-Button-Highlight")
-phtex:SetTexCoord(0, 0.625, 0, 0.6875)
-phtex:SetAllPoints()
-PauseButton:SetHighlightTexture(phtex)
+  local phtex = PauseButton:CreateTexture()
+  phtex:SetTexture("Interface/Buttons/UI-Panel-Button-Highlight")
+  phtex:SetTexCoord(0, 0.625, 0, 0.6875)
+  phtex:SetAllPoints()
+  PauseButton:SetHighlightTexture(phtex)
 
-local pptex = PauseButton:CreateTexture()
-pptex:SetTexture("Interface/Buttons/UI-Panel-Button-Down")
-pptex:SetTexCoord(0, 0.625, 0, 0.6875)
-pptex:SetAllPoints()
-PauseButton:SetPushedTexture(pptex)
+  local pptex = PauseButton:CreateTexture()
+  pptex:SetTexture("Interface/Buttons/UI-Panel-Button-Down")
+  pptex:SetTexCoord(0, 0.625, 0, 0.6875)
+  pptex:SetAllPoints()
+  PauseButton:SetPushedTexture(pptex)
 
-PauseButton:SetScript("OnClick", function(self) CollectionState(PauseButton:GetText()) end)
+  PauseButton:SetScript("OnClick", function(self) CollectionState(PauseButton:GetText()) end)

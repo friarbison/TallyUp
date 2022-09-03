@@ -46,3 +46,13 @@
 #  8/25/2022  -  Pause button and clear button was sharing variables for texture, corrected.
 #                Also, added Lock icons/textures to the Title label for clarity.  This involved
 #                creating two new blp and adding them to the icons directory.
+# V1.0.0.18
+#  8/28/2022  -  Initial release for CurseForge.
+#                Cleaned the much commented code and changed the names that would conflict in
+#                global env.  
+#                Removed the unused file, toby.tga
+#                Removed the .git file I left in the packaged zip.
+# V1.0.0.19
+#  9/3/2022   -  TallyUp Hides in combat situations.  I had an error that caused it to 'unhide'
+#                when it was not 'on' or 'active'.  So, if it was off, it would always 
+#                reactivate the TallyUp display when coming out of combat.
