@@ -56,3 +56,11 @@
 #  9/3/2022   -  TallyUp Hides in combat situations.  I had an error that caused it to 'unhide'
 #                when it was not 'on' or 'active'.  So, if it was off, it would always 
 #                reactivate the TallyUp display when coming out of combat.
+# V2.0.0.2.plus-beta
+# 10/8/2022   -  So many changes to Tallyup and supporting libraries.  Still waiting for some of the
+#                library changes to hit the ground.  The API had changes in the Frame structure, particularly
+#                the background templates.  TallyUp changed direction in that it relies more on the itemLink
+#                instead of just the resource name.  This was driven by the changes in the tiered quality of the
+#                resources in Dragonflight.  Not a bad way but it required more complixity to what was a simple
+#                addon.  The display has changed; it no longer shows the bag count in the display, only what you 
+#                have gathered.  Mouseover will provide the total bag count.

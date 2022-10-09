@@ -1,6 +1,7 @@
 
 local TallyUp = LibStub("AceAddon-3.0"):NewAddon("TallyUp", "AceConsole-3.0", "AceEvent-3.0")
-local MainFrame1 = CreateFrame("Frame","MFrame1",UIParent, BackdropTemplateMixin and "BackdropTemplate")
+local MainFrame1 = CreateFrame("Frame","MFrame1", UIParent, BackdropTemplateMixin and "BackdropTemplate") --,UIParent, BackdropTemplateMixin and "BackdropTemplate")
+local TitleButton = CreateFrame("Button","TitleButton", MainFrame1, "GameMenuButtonTemplate")  --, MainFrame1, "UIGoldBorderButtonTemplate")
 local MsgFrame = CreateFrame("Frame","msgFrame", MainFrame1, "BackdropTemplate")
 local ColorFrame = CreateFrame("Frame","Color", MainFrame1, "BackdropTemplate")
 local RedFrame = CreateFrame("Frame","Red", ColorFrame, BackdropTemplateMixin and "BackdropTemplate")
@@ -12,12 +13,12 @@ local BlackFrame = CreateFrame("Frame","Black", ColorFrame, BackdropTemplateMixi
 local ClearButton = CreateFrame("Button", "ClearButton", MainFrame1)
 local PauseButton = CreateFrame("Button", "PauseButton", MainFrame1)
 local nFrame = CreateFrame("Frame","highlightLabels", MainFrame1, "BackdropTemplate")
-local FHeight, FWidth, MainFrame1Shown, TallyUpStatus, TallyUpVERSION, FrameLocked = 35, 144, 0, "Inactive", "1.0.0.19", 0
+local FHeight, FWidth, MainFrame1Shown, TallyUpStatus, TallyUpVERSION, FrameLocked = 35, 144, 0, "Inactive", "2.0.0.2.plus-beta", 0
 local _TotalCount, ReLoad = 0, 0
 local highlightLabels = {} 
 local STip = {}
 local cItemCnt = {}
-local _HName, Ln, _CName = "", 1, ""
+local _CName, _DBG, _DBG1 = "", False, False
 
 local cItems  = {
   --cata
@@ -43,6 +44,18 @@ local cItems  = {
   ["Aberrant Voidfin"] = 0,
   ["Malformed Gnasher"] = 0,
   --Herbs
+  ["Saxifrage"] = 0,  -- Dragonflight
+  ["River Bell Bulbs"] = 0,  -- Dragonflight
+  ["Panthis Nectar"] = 0,  -- Dragonflight
+  ["Writhebark"] = 0,  -- Dragonflight
+  ["Ritherem Petals"] = 0,  -- Dragonflight
+  ["River Bell Bulbs"] = 0,  -- Dragonflight
+  ["White Bell Pigment"] = 0,  -- Dragonflight
+  ["Rousing Order"] = 0,  -- Dragonflight
+  ["Fangtooth Petals"] = 0,  -- Dragonflight
+  ["Lava Beetle"] = 0,  -- Dragonflight
+  ["Bubble Poppy"] = 0,  -- Dragonflight
+  ["Hochenblume"] = 0,  -- Dragonflight
   ["Widowbloom"] = 0, 
   ["Vigil's Torch"] = 0, 
   ["Rising Glory"] = 0,  
@@ -51,6 +64,18 @@ local cItems  = {
   ["Nightshade"] = 0, 
   ["First Flower"] = 0,  -- 9.2
   -- Ore
+  ["Iridescent Ore Fragments"] = 0,  --Beta Dragonflight
+  ["Khaz'gorite Ore 1"] = 0,  --Beta Dragonflight
+  ["Khaz'gorite Ore 2"] = 0,  --Beta Dragonflight
+  ["Khaz'gorite Ore 3"] = 0,  --Beta Dragonflight
+  ["Draconium Ore 1"] = 0,  --Beta Dragonflight
+  ["Draconium Ore 2"] = 0,  --Beta Dragonflight
+  ["Draconium Ore 3"] = 0,  --Beta Dragonflight
+  ["Tyrivite Ore 1"] = 0,  --Beta Dragonflight
+  ["Tyrivite Ore 2"] = 0,  --Beta Dragonflight
+  ["Tyrivite Ore 3"] = 0,  --Beta Dragonflight
+  ["Salt Deposit"] = 0,  --Beta Dragonflight
+  ["Pebbled Rock Salts"] = 0,  --Beta Dragonflight
   ["Coarse Stone"] = 0,
   ["Rough Stone"] = 0,
   ["Solid Stone"] = 0,
@@ -77,6 +102,13 @@ local cItems  = {
   ["Pyrite Ore"] = 0,
   ["Progenium Ore"] = 0,  -- 9.2
   -- Fish
+  ["Scalebelly Mackerel"] = 0,  -- Dragonflight
+  ["Clubfish"] = 0,  -- Dragonflight
+  ["Islefin Dorado"] = 0,  -- Dragonflight
+  ["Cerulean Spinefish"] = 0,  -- Dragonflight
+  ["Aileron Seamoth"] = 0,  -- Dragonflight
+  ["Temporal Dragonhead"] = 0,  -- Dragonflight
+  ["Thousandbite Piranha"] = 0,  -- Dragonflight
   ["Sharptooth"] = 0,  --Mt. Hyjal
   ["Mountain Trout"] = 0,  --Mt. Hyjal
   ["Golden Carp"] = 0,  --Pandaria
@@ -93,6 +125,10 @@ local cItems  = {
   ["Iridescent Amberjack"] = 0, 
   ["Spinefin Piranha"] = 0,
   ["Precursor Placoderm"] = 0,  -- 9.2
+  -- Crafting regents
+  ["Primal Chaos"] = 0,  -- dragonflight
+  ["Artisan's Mettle"] = 0,  -- dragonflight
+  ["Rainbow Pearl"] = 0,  -- dragonflight
   -- Skinning
   ["Desolate Leather"] = 0,
   ["Heavey Desolate Leather"] = 0,
@@ -102,6 +138,14 @@ local cItems  = {
   ["Gaunt Sinew"] = 0,
   ["Protogenic Pelt"] = 0, -- 9.2
   -- Meat
+  ["Hornswog Hunk"] = 0,  -- dragonflight
+  ["Bruffalon Flank"] = 0,  -- dragonflight
+  ["Duck Meat"] = 0,  -- dragonflight
+  ["Burly Bear Meat"] = 0,  -- dragonflight
+  ["Maybe Meat"] = 0,  -- dragonflight
+  ["Mighty Mammoth Ribs"] = 0,  -- dragonflight
+  ["Ribbed Mollusk Meat"] = 0,  -- dragonflight
+  ["Basilisk Eggs"] = 0,  -- dragonflight
   ["Aethereal Meat"] = 0,
   ["Creeping Crawler Meat"] = 0,
   ["Phantasmal Haunch"] = 0,
@@ -109,13 +153,104 @@ local cItems  = {
   ["Shadowy Shank"] = 0,
   ["Tenebrous Ribs"] = 0,
   ["Protoflesh"] = 0,  -- 9.2
-  -- Cloth
+  -- Cloth  
+  ["Wildercloth"] = 0,  -- dragonflight
+  ["Tattered Wildercloth"] = 0,  -- dragonflight
+  ["Tuft of Primal Wool"] = 0,  -- dragonflight
   ["Shrouded Cloth"] = 0,
   ["Lightless Silk"] = 0,
   ["Penumbra Thread"] = 0,
   ["Orboreal Shard"] = 0,
   ["Silken Protofiber"] = 0  -- 9.2
 }
+
+local function getItemLinkTier(incTier)
+  if _DBG == 1 or _DBG1 == 1 then print("getItemLinkTier: incTier <" .. incTier .. ">") end
+  local str = SplitString(incTier, "|")
+  local tmpname = str[1]
+  if _DBG == 1 or _DBG1 == 1 then print("getItemLinkTier: tmpname = <" .. tmpname .. ">") end
+  local tmpstr = str[2]
+  if _DBG == 1 or _DBG1 == 1 then print("getItemLinkTier: tmpstr = <" .. tmpstr .. ">") end
+  if tmpstr ~= nil then
+    if string.find(tmpstr,"Tier") then
+      local tmpstr1 = SplitString(tmpstr,"-")
+      tmpstr = string.sub(tmpstr1[4],5,5)
+      if _DBG == 1 or _DBG1 == 1 then 
+        print("getItemLinkTier: name = <" .. tmpname .. "> and tier = <" .. tmpstr .. ">") 
+      end
+    end
+  else
+    if _DBG == 1 or _DBG1 == 1 then 
+      print("getItemLinkTier: name = <" .. tmpname .. "> and tier = <nil>") 
+    end
+  end    
+  return tonumber(tmpstr), tmpname
+end
+
+local function myGetItemCount(incItem)
+  local detailTable, itemCount, itemLink, itemLoc = {}, 0, "na", nil
+  
+  if _DBG == 1 or _DBG ==1 then print("Slot: incItem <" .. incItem .. ">") end
+  
+  for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do 
+    slot = 1
+    while slot < 33 do
+      itemLoc = ItemLocation:CreateFromBagAndSlot(bag, slot)  
+      if itemLoc:IsValid() then
+	      --local name = C_Item.GetItemName(itemLoc)
+        local id = C_Item.GetItemID(itemLoc)
+        local itemID = tonumber(incItem)
+        --if _DBG == 1 or _DBG ==1 then print("Slot: incItem <" .. incItem .. ">, Type: <" .. type(incItem) .. "> and Id = <" .. id .. ">, Type: <" .. type(id) .. "> and itemID = <" .. itemID .. ">, Type: <" .. type(itemID) .. ">") end
+        if id == itemID then
+          itemLink = C_Item.GetItemLink(itemLoc)
+          itemCount = itemCount + GetItemCount(itemLink)
+	        if _DBG == 1 or _DBG ==1 then print("Slot: " .. slot .. " - " .. id, itemLink, itemCount) end -- 21524, "Red Winter Hat"
+          return itemCount, itemLink
+        end
+      end
+      slot = slot + 1
+    end
+  end
+  
+--  for bag = 0, 4, 1 do --BACKPACK_CONTAINER, NUM_BAG_SLOTS do
+--    --get the number of slots in selected bag
+--   -- print("BagID = " .. bag)
+--    numberOfSlots =  30 --GetContainerNumSlots(bag)
+--   -- print("Slots = " .. numberOfSlots)
+--    --search every slot for item
+--    for slot = 1, 20 do --GetContainerNumSlots(bag) do  
+--        --icon, itemCount, locked, quality, readable, lootable, itemLink, isFiltered, noValue, itemID, isBound = GetContainerItemInfo(bagID, slot)
+--    --    print("Bag = " .. bag .. " and Slot is " .. slot)
+        
+--        --itemName, itemLink, _, _, _, _, _,_, _, _, _, _, __, _, _, _, _  = GetItemInfo(incItem)
+--        local itemName, itemLink, _, _, _, _, _,_, _, _, _, _, __, _, _, _, _  = GetItemInfo(incItem)
+--        local ln = GetItemCount(itemLink)
+--      --local _, itemCount, _, _, _, _, itemLink, _, _, itemID, _ = GetContainerItemInfo(bag, slot)
+--      --print("Count = " .. ln .. ", Name = " .. itemName .. ", and Link is <" .. itemLink .. ">,type: <" .. type(itemLink) .. ">, for " .. incItem)
+--      TierValue, TierName = getItemLinkTier(itemLink)
+--      if TierValue == nil then TierValue = 99 end
+--      if TierName == nil then TierName = "Nothing" end
+--      print("TierValue = " .. TierValue .." and TierName = <" .. TierName .. ">")
+--      if string.find(incItem, itemName) then
+--        print("Count = " .. ln .. ", Name = " .. itemName .. ", and Link is <" .. itemLink .. ">,type: <" .. type(itemLink) .. ">, for " .. incItem)
+--        --TierValue = getItemLinkTier(itemLink)
+--        --if TierValue ~= nil then
+--        --  incName = incName .. " " .. TierValue
+--        --end
+--        print("Adding to table ...")
+--        --table.insert(detailTable, itemLink, ln)
+--        --TotalItemCount = TotalItemCount + ln
+--      end
+--    end
+--    return TotalItemCount, detailTable
+--  end
+  
+  
+    --itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType,itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, 
+    --subclassID, bindType, expacID, setID, isCraftingReagent  = GetItemInfo(item)
+    --itemName, itemLink, _, _, _, _, _,_, _, _, _, _, __, _, _, _, _  = GetItemInfo(itemID)
+  return itemCount, itemLink
+end
 
 local function initItems()
   --print("initItems started")
@@ -124,12 +259,12 @@ local function initItems()
   cItemCnt = {}
   highlightLabels = {}
   for index, data in pairs(cItems) do
-    local cntr = GetItemCount(index)
-    if cntr == nil then
-      cntr = 0
-    end    
-    lindex = index .. " +" .. tostring(cntr)    
-    cItemCnt[lindex] = 0
+    --local cntr = GetItemCount(index)
+    --if cntr == nil then
+    --  cntr = 0
+    --end    
+    --lindex = index -- .. " +" .. tostring(cntr)    
+    cItemCnt[index] = 0
     _TotalCount = _TotalCount + 1
   end
   --print("initItems complete")
@@ -205,21 +340,27 @@ local function GetUseName(str)
   return nil
 end
 
-local function AddToIt(nName, nCnt)
-  local newindex, newCnt
+local function AddToIt(nName, nCnt, itemLink, tierLevel)
+  local newindex, newCnt, resourceName
+  
+  if tierLevel > 0 then
+    resourceName = nName .. " " .. tierLevel
+  else
+    resourceName = nName
+  end
 
   for index, data in pairs(cItemCnt) do
     --print("ADDToIt: nName: " .. nName .. ", index:  " .. index)
 
-    if string.find(index, nName, 1, 1) then
+    if string.find(index, resourceName) then
 --      print("1. Type: " .. type(cItemCnt[index]))
 --      print("2. Type: " .. type(tonumber(cItemCnt[index])))
 --      print("3. Type: " .. type(nCnt))
 --      print("4. Type: " .. type(tonumber(nCnt)))      
       newCnt = data + nCnt
-      --print("Old cnt: " .. tostring(data) .. ", Looted: " .. tostring(nCnt) .. ", new cnt: " .. tostring(newCnt))
+      if _DBG == 1 then print("Old cnt: " .. tostring(data) .. ", Looted: " .. tostring(nCnt) .. ", new cnt: " .. tostring(newCnt)) end
       cItemCnt[index] = newCnt 
-      --print("ADDToIt: Match -> " .. newindex .. " and " .. nNameMod .. ".  " ..  "Returning <" .. index .. ">.")
+      if _DBG1 == 1 then print("cItemCnt[" .. index .. "] = <" .. cItemCnt[index] .. ">") end
       return newCnt
     end     
   end
@@ -270,13 +411,25 @@ local function SetFrameHeight(fh)
   end
 end
 
-local function ShowMyToolTip(tt, txt, lnum, cnt)
-  --local n = tostring(GetItemCount(txt))
-  local n = GetItemCount(txt)
-  --n = n + cnt
-  local str = txt .. ": " .. tostring(n)
-  local ln = (string.len(str) * 10) + 16
+local function ShowMyToolTip(tt, txt, lnum, cnt, Link, Id)
+  
+  local totalCount, itemLink = myGetItemCount(Id)
+  --print(totalCount, itemLink)
+  
+--  if linkTable then
+--    for i,v in ipairs(linkTable) do
+--       print(i,v)
+--     end
+--  end
+  
+  --local n = GetItemCount(txt)
+  --local str = txt .. ": " .. tostring(n)
+  --local ln = (string.len(str) * 10) + 16
   --print("Len: " .. ln * 8)
+  --MsgFrame:SetWidth(ln)
+  --MsgFrame.text:SetText(str)
+  local str = itemLink .. ": " .. tostring(totalCount)
+  local ln = (string.len(str)*3) + 16
   MsgFrame:SetWidth(ln)
   MsgFrame.text:SetText(str)
   MsgFrame:Show()
@@ -284,6 +437,7 @@ end
 
 function HideMyToolTip(tt, txt)
   MsgFrame.text:SetText("")  
+  MsgFrame:SetSize(160,28)
   MsgFrame:Hide() 
 end
 
@@ -308,50 +462,84 @@ local function SelectColor(sel,n)
   end 
 end
 
-local function AddNewEntry(HerbName, HerbCount, LineNum)
-  local useName = nil
-  local tt = nil
+local function AddNewEntry(HerbName, HerbCount, LineNum, itemLink, tierLevel, itemId)
+  local useName, resourceName, tt = nil, nil, nil
 
-  if LineNum <= 1 then initItems() end
+  --if LineNum <= 1 then initItems() end
 
-  useName = GetUseName(HerbName)
+  if tierLevel > 0 then
+    resourceName = HerbName .. " " .. tierLevel
+  else
+    resourceName = HerbName
+  end
+  
+  useName = GetUseName(resourceName)
   SetFrameWidth(useName)  
   SetFrameHeight(LineNum)
-  --print("AddNewEntry " .. useName .. ", " .. tostring(HerbCount) .. ", " .. tostring(LineNum))
+  --print("AddNewEntry " .. useName .. ", " .. tostring(HerbCount) .. ", " .. tostring(LineNum) .. ", and Link: " .. itemLink)
   --print("AE: Frame x,y are: " .. FWidth .. " and " .. FHeight)
   MainFrame1:SetSize(FWidth, FHeight)
-  nFrame = CreateFrame("Frame", HerbName, MainFrame1, "BackdropTemplate") -- BackdropTemplateMixin and "BackdropTemplate"))
+  --nFrame = CreateFrame("Frame", HerbName, MainFrame1, "BackdropTemplate") -- BackdropTemplateMixin and "BackdropTemplate"))
+  nFrame = CreateFrame("Frame", itemLink, MainFrame1, "BackdropTemplate") -- BackdropTemplateMixin and "BackdropTemplate"))
   nFrame:SetPoint("TOPLEFT", 1, (12 - ((LineNum ) * 18)) )
   nFrame:SetSize(196,20)
+  
+--  print("AddNewEntry: Tier = <" .. Tier .. ">")
+--  local TierValue = nFrame:CreateTexture()
+--  if TierValue ~= nil then
+--    TierValue:SetTexture([[Interface\AddOns\NewOne\Icons\UnLocked]])
+--    TierValue:SetTexCoord(10, -0.3, -0.3, 1.3)
+--    TierValue:SetAllPoints(nFrame)
+--    nFrame:SetTexture(TierValue)
+--  end
+  --itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType,itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, 
+  --subclassID, bindType, expacID, setID, isCraftingReagent  = GetItemInfo(item)
+  --itemName, itemLink, _, _, _, _, _,_, _, _, _, _, _, _, _, _, _  = GetItemInfo(HerbName)
+  
+  if _DBG == 1 or _DBG1 == 1 then 
+    print("AddNewEntry: HerbName=" .. HerbName .. ", UseName=" .. useName .. ", Cnt=" .. tostring(HerbCount))
+    print("Line=" .. tostring(LineNum) .. ", and Link=" .. itemLink .. ", and tierLevel=[" .. tierLevel .. "]")  
+  end
   nFrame.text = nFrame:CreateFontString(nil,"ARTWORK") 
   nFrame.text:SetFont("Fonts\\ARIALN.ttf", 16, "OUTLINE")
   nFrame.text:SetPoint("LEFT", 2, 0)
-  nFrame.text:SetText(useName .. "..........." .. tostring(HerbCount))
-  nFrame:SetScript("OnEnter", function() ShowMyToolTip(tt, HerbName, LineNum, HerbCount) end)
+  --nFrame.text:SetText(useName .. "..........." .. tostring(HerbCount))
+  nFrame.text:SetText(itemLink .. "..........." .. tostring(HerbCount))
+  nFrame:SetScript("OnEnter", function() ShowMyToolTip(tt, HerbName, LineNum, HerbCount, itemLink, itemId) end)
   nFrame:SetScript("OnLeave", function() HideMyToolTip(tt, HerbName) end)
   nFrame:SetScript("OnMouseDown", function(self, button) 
       --print("Name is " .. nFrame:GetName()  .. " and HerbName is " .. HerbName)
       if button=='LeftButton' then 
-        SelectColor(1, HerbName)
+        SelectColor(1, itemLink)
       else
-        SelectColor(2, HerbName)
+        SelectColor(2, itemLink)
       end
     end)
   table.insert(highlightLabels, nFrame)
 end
 
-local function displayupdate(show, HerbName, HerbCount)
-  local cCnt, lblRows = 1, 0
+local function displayupdate(show, HerbName, HerbCount, itemLink, tierLevel, itemId)
+  local cCnt, lblRows, dbgName1 = 1, 0
+  if _DBG == 1 or _DBG1 == 1 then 
+    print("DisplayUpdate: HerbName=<" .. HerbName .. ">, HerbCount=[" .. HerbCount .. "] ")
+    print("DisplayUpdate: itemLink=<" .. itemLink .. ">, tierLevel=[" .. tierLevel .. "] ")
+  end
+  
   if show == 1 then
-    HerbCount = AddToIt(HerbName, HerbCount)
+    HerbCount = AddToIt(HerbName, HerbCount, itemLink, tierLevel)
+    
+    --for index, data in pairs(cItemCnt) do
+    --  print("displayupdate: Index = <" .. index .. "> and data is [" .. data .. "].")
+    --end
+     
     for i, v in pairs(highlightLabels) do 
       lblRows = lblRows + 1
-      dbgName1 = v.text:GetText()
-      --if ReLoad == 1 then
-      -- print("INSIDE: Row: " .. lblRows .. " - <" .. HerbName .. ">.  ReLoad: " .. tostring(ReLoad))
-      --end
-      if v:GetName() == HerbName then
-        v.text:SetText(formatHerbName(dbgName1, "%.") .. "..........." .. tostring(HerbCount))
+      --if v:GetName() == HerbName then
+      if _DBG == 1 or _DBG1 == 1 then print("DisplayUpdate: v:GetName = <" .. v:GetName() .. "> and itemLink is <" .. itemLink .. ">") end
+      if v:GetName() == itemLink then
+        if _DBG == 1 or _DBG1 == 1 then print("DisplayUpdate:  MATCHED ...") end
+        --v.text:SetText(formatHerbName(dbgName1, "%.") .. "..........." .. tostring(HerbCount))
+        v.text:SetText(itemLink .. "..........." .. tostring(HerbCount))
         if ReLoad == 1 then ReLoad = 0 end
         return nil
       end      
@@ -360,7 +548,7 @@ local function displayupdate(show, HerbName, HerbCount)
     --print("OUTSIDE: Row: " .. lblRows .. " - <" .. HerbName .. ">.  ReLoad: " .. tostring(ReLoad))
     if ReLoad == 1 then ReLoad = 0 end
     lblRows = lblRows + 1
-    AddNewEntry(HerbName, HerbCount, lblRows)
+    AddNewEntry(HerbName, HerbCount, lblRows, itemLink, tierLevel, itemId)
     ClearButton:Show()   
   else
     if MainFrame1Shown == 1 then MainFrame1:Hide() MainFrame1Shown = 0 end
@@ -377,10 +565,6 @@ local function CollectionState(state)
     MainFrame1:RegisterEvent("CHAT_MSG_LOOT")
     PauseButton:SetWidth(40)
   end
-end    
-
-local function StripStr(str)
-  return str:gsub("%s+", "")
 end
 
 local options = {
@@ -419,6 +603,7 @@ end
 
 function TallyUp:OnCommand(input)
   if self:GetName() == "TallyUp" then  
+    --print("input is " .. input)
     if input == "hide" then
       if MainFrame1Shown == 1 then MainFrame1Shown = 0 end
       MainFrame1:Hide()
@@ -426,29 +611,33 @@ function TallyUp:OnCommand(input)
       if MainFrame1Shown == 0 then MainFrame1Shown = 1 end
       MainFrame1:Show()
     elseif input == "on" then
-      --print("Re-init called ...")
-      reInitialize() 
-      --print("Re-init completed, Registering events ...")
-      MainFrame1:RegisterEvent("CHAT_MSG_LOOT")
-      MainFrame1:RegisterEvent("ENCOUNTER_START")
-      MainFrame1:RegisterEvent("ENCOUNTER_END")
-      MainFrame1:RegisterEvent("PLAYER_REGEN_ENABLED")
-      MainFrame1:RegisterEvent("PLAYER_REGEN_DISABLED")
-      if MainFrame1Shown == 0 then MainFrame1:Show() MainFrame1Shown=1 end
-      print("TallyUp is on.")
-      TallyUpStatus = "Active"
-      self.Db.global.vStatus = false
-      self.Db.profile.vStatus = true
+      if TallyUpStatus == "Inactive" then
+        if _DBG == 1 or _DBG1 == 1 then print("Re-init called ...") end
+        reInitialize() 
+        if _DBG == 1 or _DBG1 == 1 then print("Re-init completed, Registering events ...") end
+        MainFrame1:RegisterEvent("CHAT_MSG_LOOT")
+        MainFrame1:RegisterEvent("ENCOUNTER_START")
+        MainFrame1:RegisterEvent("ENCOUNTER_END")
+        MainFrame1:RegisterEvent("PLAYER_REGEN_ENABLED")
+        MainFrame1:RegisterEvent("PLAYER_REGEN_DISABLED")
+        if MainFrame1Shown == 0 then MainFrame1:Show() MainFrame1Shown=1 end
+        print("TallyUp is on.")
+        TallyUpStatus = "Active"
+        self.Db.global.vStatus = false
+        self.Db.profile.vStatus = true
+      end
     elseif input == "off" then
-      reInitialize()
-      MainFrame1:UnregisterEvent("CHAT_MSG_LOOT")
-      MainFrame1:Hide()
-      if MainFrame1Shown == 1 then MainFrame1Shown = 0 end
-      ClearButton:Hide()
-      print("TallyUp is off.")
-      TallyUpStatus = "Inactive"
-      self.Db.global.vStatus = false
-      self.Db.profile.vStatus = false
+      if TallyUpStatus == "Active" then
+        --reInitialize()
+        MainFrame1:UnregisterEvent("CHAT_MSG_LOOT")
+        MainFrame1:Hide()
+        if MainFrame1Shown == 1 then MainFrame1Shown = 0 end
+        ClearButton:Hide()
+        print("TallyUp is off.")
+        TallyUpStatus = "Inactive"
+        self.Db.global.vStatus = false
+        self.Db.profile.vStatus = false
+      end
     elseif input == "v" or input == "version" then
       print("TallyUp " .. TallyUpVERSION .. " is " .. TallyUpStatus)
     elseif input == "reset" then
@@ -461,15 +650,37 @@ function TallyUp:OnCommand(input)
       TallyUp:mysim("Widowbloom", 3)
     elseif input == "d3" then
       TallyUp:mysim("Phaedrum Ore", 4)
+    elseif input == "d4" then
+      TallyUp:mysim("Tyrivite Ore", 4)
+    elseif input == "DBG on" or input == "dbg on" then
+      _DBG = 1
+      print ("Debugging is on: DBG [" .. _DBG .. "].")
+    elseif input == "DBG1 on" or input == "dbg1 on" then
+      _DBG1 = 1
+      print ("Debugging is on: DBG1 [" .. _DBG1 .. "].")
+    elseif input == "DBG off" or input == "dbg off" then
+      _DBG = 0
+      print ("Debugging is off: DBG [" .. _DBG .. "].")
+    elseif input == "DBG1 off" or input == "dbg1 off" then
+      _DBG1 = 0
+      print ("Debugging is off: DBG1 [" .. _DBG1 .. "].")
+    elseif input == "DBG2 on" or input == "dbg2 on" then
+      _DBG = 1
+      _DBG1 = 1
+      print ("Debugging is on: DBG [" .. _DBG .. "] and DBG1 [" .. _DBG1 .. "].")
+    elseif input == "DBG2 off" or input == "dbg2 off" then
+      _DBG = 0
+      _DBG1 = 0
+      print ("Debugging is off: DBG [" .. _DBG .. "] and DBG1 [" .. _DBG1 .. "].")
     elseif input == "h" or input == "help" or input == "?" then
       ShowCommands()
     else
---      ShowCommands()
-      if TallyUpStatus == "Active" then
-        TallyUp:OnCommand("off")
-      else
-        TallyUp:OnCommand("on")
-      end
+      ShowCommands()
+--      if TallyUpStatus == "Active" then
+--        TallyUp:OnCommand("off")
+--      else
+--        TallyUp:OnCommand("on")
+--      end
       print("TallyUp " .. TallyUpVERSION .. " is " .. TallyUpStatus)
     end
   end
@@ -534,7 +745,7 @@ RedFrame:SetScript("OnMouseDown", function(self, btn)
   end)
 RedFrame:Hide()
 
-GreenFrame:SetPoint("TOpLEFT", 6, -19)
+GreenFrame:SetPoint("TopLEFT", 6, -19)
 GreenFrame:SetSize(70,14)
 GreenFrame:SetBackdrop({
     bgFile = "Interface/Tooltips/UI-Tooltip-Background",
@@ -547,7 +758,6 @@ GreenFrame:SetFrameLevel(600)
 GreenFrame:SetScript("OnMouseDown", function(self, btn) 
     for i, v in pairs(highlightLabels) do
       if v:GetName() == _CName then
-        --print("Setting Color to Green on " .. _CName)
         v.text:SetTextColor(0,1,0,1)
         break
       end
@@ -668,7 +878,7 @@ MainFrame1:SetScript("OnDragStop", function(self)
     end
   end
 
-  local TitleButton = CreateFrame("Button","TitleButton", MainFrame1, "UIGoldBorderButtonTemplate")
+--  local TitleButton = CreateFrame("Button","TitleButton", MainFrame1, "UIGoldBorderButtonTemplate")
   TitleButton:SetHeight(24)
   TitleButton:SetWidth(180)
 --Odds and ends while ironing out the bumps with texture
@@ -752,7 +962,6 @@ MainFrame1:SetScript("OnDragStop", function(self)
       print("HerbName: <" .. HerbName .. "> and hname: <" .. hname .. ">")
       print("3. hname is <" .. hname .. ">")
       if (h .. " ") == hname then
-        _HName = i
         if c == nil then
           c = 1
         end
@@ -780,47 +989,133 @@ MainFrame1:SetScript("OnDragStop", function(self)
       return 0
     end
   end
+  
+  local function ClearBracket(str)
+    while string.sub(str,-1) == ']' do
+      str = string.sub(str, 1, (#str) - 1)
+    end
+    return str
+  end
+  
+local function StripStr(str)
+  return str:gsub("%s+", "")
+end
+
+local function TruncStr(str)
+  while string.sub(str, -1) == ' '
+  do
+    str = string.sub(str, 1, (#str) - 1)
+  end  
+  return str
+end
+  
+  function SplitString (incStr, sep)
+    if sep == nil then
+      sep = "%s"
+    end
+    local t={}
+    if incStr == nil then
+      return nil
+    end
+     
+    for str in string.gmatch(incStr, "([^"..sep.."]+)") do
+      if _DBG == 1 or _DBG1 == 1 then print("SplitString: <" .. str .. ">.") end
+      table.insert(t, TruncStr(str))
+    end
+    return t
+  end
+  
+  local function HowMany(incNum)
+    local iCnt = nil
+    for c in string.gmatch(incNum, '.') do  
+      -- print("HowMany - C: " .. c .. ", " .. type(c) .. " <" .. incNum .. ">")
+      if tonumber(c) ~= nil then
+        if iCnt == nil then
+          iCnt = c
+        else
+          iCnt = iCnt .. c
+        end
+      end
+    end
+    if iCnt == nil then
+      iCnt = 1
+    end
+    -- print ("HowMany: Found " .. iCnt .. " of them.")
+    return iCnt
+  end
 
   MainFrame1:SetScript("OnEvent", function(self, event, ...) 
-      local rtn = 0
-      --print("Event is " .. event)
+      local args = {...}
+      local rtn, tierLevel, resourceName, itemId = 0, 0, nil, 0
+      
+      if _DBG1 == 1 then print("Event is " .. event) end
       if event == "PLAYER_REGEN_ENABLED" then 
         rtn = checkStatus(0)
       elseif event == "PLAYER_REGEN_DISABLED" then
         rtn = checkStatus(1)
       elseif rtn == 0 then
 
-        local tStr, HerbName, HerbStr, HerbCnt, beginning1, beginning2, ending1, ending2, PlayerName, PlayerNameLooting, hname
-        _HName = nil
+        local tStr, HerbName, HerbStr, HerbCnt, PlayerName, PlayerNameLooting, itemLink
+        
         HerbStr = select(1, ...)
+        if _DBG == 1 then print("HerbStr is :" .. HerbStr) end
+
         PlayerNameLooting = select(2, ...)
+        -- print("PlayerNameLooting is :" .. PlayerNameLooting)
+        
         PlayerName = UnitName("player") .. "-" .. GetRealmName():gsub("%s+", "")
+        -- print("PlayerName is :" .. PlayerName)
 
         if PlayerNameLooting == PlayerName then 
-          beginning1, beginning2=string.find(HerbStr, "%[")
-          ending1, ending2=string.find(HerbStr,"%]")
-          HerbName=string.sub(HerbStr,(beginning2 + 1), (ending1 - 1))
-          tStr = string.sub(HerbStr, (string.len(HerbStr) - 2) , string.len(HerbStr))
-          for c in string.gmatch(tStr, '.') do  
-            --print("c. :" .. c .. ", " .. type(c) .. " <" .. tStr .. ">")
-            if tonumber(c) ~= nil then
-              if HerbCnt == nil then
-                HerbCnt = c
-              else
-                HerbCnt = HerbCnt .. c
-              end
+          local splt = SplitString(HerbStr, '|') 
+          if splt ~= nil then
+            local itemIdrtn = SplitString(splt[3],":")
+            itemId = itemIdrtn[2]
+            if _DBG == 1 or _DBG1 == 1 then print ("SetSCript: itemId=<" .. itemId .. ">") end
+            itemLink = string.sub(splt[4], 2)
+            resourceName = splt[5]
+            --local pos1, pos2 = string.find(itemLink,"%[")
+            --print("POS1 = " .. pos1 .. " amd POS2 = " .. pos2)
+            if _DBG1 == 1 then print("SetScript: resourceName is <" .. resourceName .. "> and itemLink = <" .. itemLink .. ">") end
+            if string.find(resourceName,"Tier") then
+              itemLink = itemLink .. " |" .. resourceName .. "|a]"
+              tierLevel, _ = getItemLinkTier(itemLink)
+              if _DBG1 == 1 then print("SetScript:splt(4,5,6) itemLink is <" .. itemLink .. "> at Tier: [" .. tierLevel .. "]") end
+            else
+              tierLevel = 0
+              --if _DBG == 1 then print("SetScript:splt(4) itemLink is <" .. itemLink .. ">") end
+            end            
+            HerbName = ClearBracket(splt[4])
+            HerbName = string.sub(HerbName, 3)
+            if _DBG1 == 1 then print("SetScript:After ClearBracket HerbName is <" .. HerbName .. ">") end
+            itemLink = string.sub(itemLink,1)
+            if _DBG1 == 1 then print("SetScript:After string.sub, itemLink is <" .. itemLink .. ">at Tier: [" .. tierLevel .. "]") end
+            
+            if HerbName == nil then
+              HerbName = "Unknown"
             end
-          end 
+             
+            tStr = splt[table.maxn(splt)]
+            if tStr == nil then
+              tStr = "rx1"
+            end
 
+            HerbCnt = HowMany(tStr) 
+            if _DBG == 1 or _DBG1 == 1 then 
+              print ("SetSCript: Found " .. HerbCnt .. " of <" .. HerbName .. ">:<" .. itemLink .. "> with resourceName=<" .. resourceName .. "> at Tier [" .. tierLevel .. "]") 
+            end
+          end
+
+          if tierLevel > 0 then
+            resourceName = HerbName .. " " .. tierLevel
+          else
+            resourceName = HerbName
+          end
           for i,v in pairs(cItemCnt) do
-            hname = CheckGlobalName(i, "%+")
-            if (HerbName .. " ") == hname then
-              _HName = i
-              if HerbCnt == nil then
-                HerbCnt = 1
-              end
-              displayupdate(1, HerbName, HerbCnt)
-              HerbCnt = nil
+            --if _DBG1 == 1 then print("i=" .. i .. ", resourceName=<" .. resourceName .. ">, HerbName=<" .. HerbName .. ">") end
+
+            if string.find(resourceName,i) then
+              displayupdate(1, HerbName, HerbCnt, itemLink, tierLevel, itemId)
               break
             end
           end
