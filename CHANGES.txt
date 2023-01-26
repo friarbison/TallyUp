@@ -64,3 +64,12 @@
 #                resources in Dragonflight.  Not a bad way but it required more complixity to what was a simple
 #                addon.  The display has changed; it no longer shows the bag count in the display, only what you 
 #                have gathered.  Mouseover will provide the total bag count.
+# V3.0.0.1   -   
+# 11/24/2022 -   Updated list of resources from the most recent Bet release.
+# V3.0.0.2   -   
+# 11/27/2022 -   Typo that got through test.  Period instead of comma is bad in Lua!
+# V3.0.0.3   -   
+# 12/5/2022  -   Found a new kind of fish!
+#            -   Wasn't reading the Reagent bags, missing those in the count.  Should be fixed.
+# V3.0.0.4   -   
+# 1/26/2023  -   Release 10.00.05 update.  Only changed the build # in the TOC.

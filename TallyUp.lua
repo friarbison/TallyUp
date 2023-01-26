@@ -13,7 +13,7 @@ local BlackFrame = CreateFrame("Frame","Black", ColorFrame, BackdropTemplateMixi
 local ClearButton = CreateFrame("Button", "ClearButton", MainFrame1)
 local PauseButton = CreateFrame("Button", "PauseButton", MainFrame1)
 local nFrame = CreateFrame("Frame","highlightLabels", MainFrame1, "BackdropTemplate")
-local FHeight, FWidth, MainFrame1Shown, TallyUpStatus, TallyUpVERSION, FrameLocked = 35, 144, 0, "Inactive", "2.0.0.2.plus-beta", 0
+local FHeight, FWidth, MainFrame1Shown, TallyUpStatus, TallyUpVERSION, FrameLocked = 35, 144, 0, "Inactive", "3.0.0.4", 0
 local _TotalCount, ReLoad = 0, 0
 local highlightLabels = {} 
 local STip = {}
@@ -44,18 +44,31 @@ local cItems  = {
   ["Aberrant Voidfin"] = 0,
   ["Malformed Gnasher"] = 0,
   --Herbs
-  ["Saxifrage"] = 0,  -- Dragonflight
+  ["Saxifrage 1"] = 0,  -- Dragonflight
+  ["Saxifrage 2"] = 0,  -- Dragonflight
+  ["Saxifrage 3"] = 0,  -- Dragonflight
   ["River Bell Bulbs"] = 0,  -- Dragonflight
   ["Panthis Nectar"] = 0,  -- Dragonflight
-  ["Writhebark"] = 0,  -- Dragonflight
+  ["Writhebark 1"] = 0,  -- Dragonflight
+  ["Writhebark 2"] = 0,  -- Dragonflight
+  ["Writhebark 3"] = 0,  -- Dragonflight
   ["Ritherem Petals"] = 0,  -- Dragonflight
   ["River Bell Bulbs"] = 0,  -- Dragonflight
   ["White Bell Pigment"] = 0,  -- Dragonflight
   ["Rousing Order"] = 0,  -- Dragonflight
   ["Fangtooth Petals"] = 0,  -- Dragonflight
-  ["Lava Beetle"] = 0,  -- Dragonflight
-  ["Bubble Poppy"] = 0,  -- Dragonflight
-  ["Hochenblume"] = 0,  -- Dragonflight
+  ["Bubble Poppy 1"] = 0,  -- Dragonflight
+  ["Bubble Poppy 2"] = 0,  -- Dragonflight
+  ["Bubble Poppy 3"] = 0,  -- Dragonflight
+  ["Hochenblume 1"] = 0,  -- Dragonflight
+  ["Hochenblume 2"] = 0,  -- Dragonflight
+  ["Hochenblume 3"] = 0,  -- Dragonflight
+  ["Primal Convergent 1"] = 0,  -- Dragonflight
+  ["Primal Convergent 2"] = 0,  -- Dragonflight
+  ["Primal Convergent 3"] = 0,  -- Dragonflight
+  ["Omnium Draconis 1"] = 0,  -- Dragonflight
+  ["Omnium Draconis 2"] = 0,  -- Dragonflight
+  ["Omnium Draconis 3"] = 0,  -- Dragonflight
   ["Widowbloom"] = 0, 
   ["Vigil's Torch"] = 0, 
   ["Rising Glory"] = 0,  
@@ -63,7 +76,9 @@ local cItems  = {
   ["Death Blossom"] = 0,  
   ["Nightshade"] = 0, 
   ["First Flower"] = 0,  -- 9.2
-  -- Ore
+  ["Foxflower"] = 0,  --Broken Isles
+  -- Minerals
+  ["Coal"] = 0,  -- Dragonflight
   ["Iridescent Ore Fragments"] = 0,  --Beta Dragonflight
   ["Khaz'gorite Ore 1"] = 0,  --Beta Dragonflight
   ["Khaz'gorite Ore 2"] = 0,  --Beta Dragonflight
@@ -71,9 +86,63 @@ local cItems  = {
   ["Draconium Ore 1"] = 0,  --Beta Dragonflight
   ["Draconium Ore 2"] = 0,  --Beta Dragonflight
   ["Draconium Ore 3"] = 0,  --Beta Dragonflight
-  ["Tyrivite Ore 1"] = 0,  --Beta Dragonflight
-  ["Tyrivite Ore 2"] = 0,  --Beta Dragonflight
-  ["Tyrivite Ore 3"] = 0,  --Beta Dragonflight
+  ["Serevite Ore 1"] = 0,  --Beta Dragonflight
+  ["Serevite Ore 2"] = 0,  --Beta Dragonflight
+  ["Serevite Ore 3"] = 0,  --Beta Dragonflight
+  ["Primal Molten Alloy 1"] = 0,  --Beta Dragonflight
+  ["Primal Molten Alloy 2"] = 0,  --Beta Dragonflight
+  ["Primal Molten Alloy 3"] = 0,  --Beta Dragonflight
+  ["Frostfire Alloy 1"] = 0,  --Beta Dragonflight
+  ["Frostfire Alloy 2"] = 0,  --Beta Dragonflight
+  ["Frostfire Alloy 3"] = 0,  --Beta Dragonflight
+  ["Obsidian Seared Alloy 1"] = 0,  --Beta Dragonflight
+  ["Obsidian Seared Alloy 2"] = 0,  --Beta Dragonflight
+  ["Obsidian Seared Alloy 3"] = 0,  --Beta Dragonflight
+  ["Infurious Alloy 1"] = 0,  --Beta Dragonflight
+  ["Infurious Alloy 2"] = 0,  --Beta Dragonflight
+  ["Infurious Alloy 3"] = 0,  --Beta Dragonflight
+  ["Silken Gemdust 1"] = 0,  --Beta Dragonflight
+  ["Silken Gemdust 2"] = 0,  --Beta Dragonflight
+  ["Silken Gemdust 3"] = 0,  --Beta Dragonflight
+  ["Glossy Stone 1"] = 0,  --Beta Dragonflight
+  ["Glossy Stone 2"] = 0,  --Beta Dragonflight
+  ["Glossy Stone 3"] = 0,  --Beta Dragonflight
+  ["Queen's Ruby 1"] = 0,  --Beta Dragonflight
+  ["Queen's Ruby 2"] = 0,  --Beta Dragonflight
+  ["Queen's Ruby 3"] = 0,  --Beta Dragonflight
+  ["Mystic Sapphire 1"] = 0,  --Beta Dragonflight
+  ["Mystic Sapphire 2"] = 0,  --Beta Dragonflight
+  ["Mystic Sapphire 3"] = 0,  --Beta Dragonflight
+  ["Vibrant Emerald 1"] = 0,  --Beta Dragonflight
+  ["Vibrant Emerald 2"] = 0,  --Beta Dragonflight
+  ["Vibrant Emerald 3"] = 0,  --Beta Dragonflight
+  ["Sundered Onyx 1"] = 0,  --Beta Dragonflight
+  ["Sundered Onyx 2"] = 0,  --Beta Dragonflight
+  ["Sundered Onyx 3"] = 0,  --Beta Dragonflight
+  ["Eternity Amber 1"] = 0,  --Beta Dragonflight
+  ["Eternity Amber 2"] = 0,  --Beta Dragonflight
+  ["Eternity Amber 3"] = 0,  --Beta Dragonflight
+  ["Alexstraszite 1"] = 0,  --Beta Dragonflight
+  ["Alexstraszite 2"] = 0,  --Beta Dragonflight
+  ["Alexstraszite 3"] = 0,  --Beta Dragonflight
+  ["Malygite 1"] = 0,  --Beta Dragonflight
+  ["Malygite 2"] = 0,  --Beta Dragonflight
+  ["Malygite 3"] = 0,  --Beta Dragonflight
+  ["Ysemerald 1"] = 0,  --Beta Dragonflight
+  ["Ysemerald 2"] = 0,  --Beta Dragonflight
+  ["Ysemerald 3"] = 0,  --Beta Dragonflight
+  ["Neltharite 1"] = 0,  --Beta Dragonflight
+  ["Neltharite 2"] = 0,  --Beta Dragonflight
+  ["Neltharite 3"] = 0,  --Beta Dragonflight
+  ["Nozdorite 1"] = 0,  --Beta Dragonflight
+  ["Nozdorite 2"] = 0,  --Beta Dragonflight
+  ["Nozdorite 3"] = 0,  --Beta Dragonflight
+  ["Illimited Diamond 1"] = 0,  --Beta Dragonflight
+  ["Illimited Diamond 2"] = 0,  --Beta Dragonflight
+  ["Illimited Diamond 3"] = 0,  --Beta Dragonflight
+  ["Frameless Lens 1"] = 0,  --Beta Dragonflight
+  ["Frameless Lens 2"] = 0,  --Beta Dragonflight
+  ["Frameless Lens 3"] = 0,  --Beta Dragonflight
   ["Salt Deposit"] = 0,  --Beta Dragonflight
   ["Pebbled Rock Salts"] = 0,  --Beta Dragonflight
   ["Coarse Stone"] = 0,
@@ -101,6 +170,7 @@ local cItems  = {
   ["Elementium Ore"] = 0,
   ["Pyrite Ore"] = 0,
   ["Progenium Ore"] = 0,  -- 9.2
+  ["Leystone Deposit"] = 0, --Broken Isles
   -- Fish
   ["Scalebelly Mackerel"] = 0,  -- Dragonflight
   ["Clubfish"] = 0,  -- Dragonflight
@@ -109,10 +179,16 @@ local cItems  = {
   ["Aileron Seamoth"] = 0,  -- Dragonflight
   ["Temporal Dragonhead"] = 0,  -- Dragonflight
   ["Thousandbite Piranha"] = 0,  -- Dragonflight
+  ["Magma Thresher"] = 0,  --Dragonflight
+  ["Frosted Rimefin Tuna"] = 0,  --Dragonflight
+  ["Prismatic Leaper"] = 0,  --Dragonflight
+  ["Dull Spined Clam"] = 0,  --Dragonflight
+  ["Grungle"] = 0,  --Dragonflight
   ["Sharptooth"] = 0,  --Mt. Hyjal
   ["Mountain Trout"] = 0,  --Mt. Hyjal
   ["Golden Carp"] = 0,  --Pandaria
   ["Jade Lungfish"] = 0,  --Pandaria
+  ["High Mountain Salmon"] = 0,  --Broken Isles
   ["Raw Sagefish"] = 0,
   ["Sand Shifter"] = 0,
   ["Midnight Salmon"] = 0,
@@ -125,11 +201,39 @@ local cItems  = {
   ["Iridescent Amberjack"] = 0, 
   ["Spinefin Piranha"] = 0,
   ["Precursor Placoderm"] = 0,  -- 9.2
+  ["Black Barracuda"] = 0,  -- Broken Isles
   -- Crafting regents
   ["Primal Chaos"] = 0,  -- dragonflight
   ["Artisan's Mettle"] = 0,  -- dragonflight
   ["Rainbow Pearl"] = 0,  -- dragonflight
   -- Skinning
+  ["Resillient Leather 1"] = 0,  -- dragonflight
+  ["Resillient Leather 2"] = 0,  -- dragonflight
+  ["Resillient Leather 3"] = 0,  -- dragonflight
+  ["Adamant Scales 1"] = 0,  -- dragonflight
+  ["Adamant Scales 2"] = 0,  -- dragonflight
+  ["Adamant Scales 3"] = 0,  -- dragonflight
+  ["Dense Hide 1"] = 0,  -- dragonflight
+  ["Dense Hide 2"] = 0,  -- dragonflight
+  ["Dense Hide 3"] = 0,  -- dragonflight
+  ["Stonecrust Hide 1"] = 0,  -- dragonflight
+  ["Stonecrust Hide 2"] = 0,  -- dragonflight
+  ["Stonecrust Hide 3"] = 0,  -- dragonflight
+  ["Lustrous Scaled Hide 1"] = 0,  -- dragonflight
+  ["Lustrous Scaled Hide 2"] = 0,  -- dragonflight
+  ["Lustrous Scaled Hide 3"] = 0,  -- dragonflight
+  ["Frostbite Scales Hide 1"] = 0,  -- dragonflight
+  ["Frostbite Scales Hide 2"] = 0,  -- dragonflight
+  ["Frostbite Scales Hide 3"] = 0,  -- dragonflight
+  ["Crystalspine Fur"] = 0,  -- dragonflight
+  ["Salamanther Scales"] = 0,  -- dragonflight
+  ["Cacophonous Thunderscale"] = 0,  -- dragonflight
+  ["Fire-Infused Hide"] = 0,  -- dragonflight
+  ["Rockfang Leather"] = 0,  -- dragonflight
+  ["Pristine Vorquin Horn"] = 0,  -- dragonflight
+  ["Fire-Infused Hide"] = 0,  -- dragonflight
+  ["Windsong Plumage"] = 0,  -- dragonflight
+  ["Flawless Proto Dragon Scale"] = 0,  -- dragonflight
   ["Desolate Leather"] = 0,
   ["Heavey Desolate Leather"] = 0,
   ["Callous Hide"] = 0,
@@ -141,11 +245,14 @@ local cItems  = {
   ["Hornswog Hunk"] = 0,  -- dragonflight
   ["Bruffalon Flank"] = 0,  -- dragonflight
   ["Duck Meat"] = 0,  -- dragonflight
-  ["Burly Bear Meat"] = 0,  -- dragonflight
+  ["Burly Bear Haunch"] = 0,  -- dragonflight
   ["Maybe Meat"] = 0,  -- dragonflight
   ["Mighty Mammoth Ribs"] = 0,  -- dragonflight
   ["Ribbed Mollusk Meat"] = 0,  -- dragonflight
-  ["Basilisk Eggs"] = 0,  -- dragonflight
+  ["Waterfowl Filet"] = 0,  --Dragonflight
+  ["Basilisk Eggs"] = 0, --Dragonflight
+  ["Salt Deposit"] = 0,  --Dragonflight
+  ["Lava Beetle"] = 0,  -- Dragonflight
   ["Aethereal Meat"] = 0,
   ["Creeping Crawler Meat"] = 0,
   ["Phantasmal Haunch"] = 0,
@@ -191,10 +298,9 @@ local function myGetItemCount(incItem)
   local detailTable, itemCount, itemLink, itemLoc = {}, 0, "na", nil
   
   if _DBG == 1 or _DBG ==1 then print("Slot: incItem <" .. incItem .. ">") end
-  
-  for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do 
+  for bag = BACKPACK_CONTAINER, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
     slot = 1
-    while slot < 33 do
+    while slot < 51 do
       itemLoc = ItemLocation:CreateFromBagAndSlot(bag, slot)  
       if itemLoc:IsValid() then
 	      --local name = C_Item.GetItemName(itemLoc)
@@ -211,44 +317,6 @@ local function myGetItemCount(incItem)
       slot = slot + 1
     end
   end
-  
---  for bag = 0, 4, 1 do --BACKPACK_CONTAINER, NUM_BAG_SLOTS do
---    --get the number of slots in selected bag
---   -- print("BagID = " .. bag)
---    numberOfSlots =  30 --GetContainerNumSlots(bag)
---   -- print("Slots = " .. numberOfSlots)
---    --search every slot for item
---    for slot = 1, 20 do --GetContainerNumSlots(bag) do  
---        --icon, itemCount, locked, quality, readable, lootable, itemLink, isFiltered, noValue, itemID, isBound = GetContainerItemInfo(bagID, slot)
---    --    print("Bag = " .. bag .. " and Slot is " .. slot)
-        
---        --itemName, itemLink, _, _, _, _, _,_, _, _, _, _, __, _, _, _, _  = GetItemInfo(incItem)
---        local itemName, itemLink, _, _, _, _, _,_, _, _, _, _, __, _, _, _, _  = GetItemInfo(incItem)
---        local ln = GetItemCount(itemLink)
---      --local _, itemCount, _, _, _, _, itemLink, _, _, itemID, _ = GetContainerItemInfo(bag, slot)
---      --print("Count = " .. ln .. ", Name = " .. itemName .. ", and Link is <" .. itemLink .. ">,type: <" .. type(itemLink) .. ">, for " .. incItem)
---      TierValue, TierName = getItemLinkTier(itemLink)
---      if TierValue == nil then TierValue = 99 end
---      if TierName == nil then TierName = "Nothing" end
---      print("TierValue = " .. TierValue .." and TierName = <" .. TierName .. ">")
---      if string.find(incItem, itemName) then
---        print("Count = " .. ln .. ", Name = " .. itemName .. ", and Link is <" .. itemLink .. ">,type: <" .. type(itemLink) .. ">, for " .. incItem)
---        --TierValue = getItemLinkTier(itemLink)
---        --if TierValue ~= nil then
---        --  incName = incName .. " " .. TierValue
---        --end
---        print("Adding to table ...")
---        --table.insert(detailTable, itemLink, ln)
---        --TotalItemCount = TotalItemCount + ln
---      end
---    end
---    return TotalItemCount, detailTable
---  end
-  
-  
-    --itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType,itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, 
-    --subclassID, bindType, expacID, setID, isCraftingReagent  = GetItemInfo(item)
-    --itemName, itemLink, _, _, _, _, _,_, _, _, _, _, __, _, _, _, _  = GetItemInfo(itemID)
   return itemCount, itemLink
 end
 
@@ -258,12 +326,7 @@ local function initItems()
   _TotalCount = 0
   cItemCnt = {}
   highlightLabels = {}
-  for index, data in pairs(cItems) do
-    --local cntr = GetItemCount(index)
-    --if cntr == nil then
-    --  cntr = 0
-    --end    
-    --lindex = index -- .. " +" .. tostring(cntr)    
+  for index, data in pairs(cItems) do  
     cItemCnt[index] = 0
     _TotalCount = _TotalCount + 1
   end
@@ -272,7 +335,6 @@ end
 
 local function myNull()
 end
-
 
 local function reInitialize() 
   local lblRows
@@ -398,7 +460,8 @@ local function ResetData()
 end
 
 local function SetFrameWidth(HerbName)
-  local fw = (string.len(HerbName) + 18) * 6
+  local fw = FWidth
+  if HerbName ~= nil then fw = (string.len(HerbName) + 20) * 6 end
   if fw > FWidth then
     FWidth = fw
   end
@@ -644,6 +707,9 @@ function TallyUp:OnCommand(input)
       reInitialize()
       --print("All values have been reset")
       --print("TallyUp is " .. TallyUpStatus)
+    elseif string.find(input,"add",1) then
+      --displayupdate(1, HerbName, HerbCnt, itemLink, tierLevel, itemId)
+      print("Add function goes here.")
     elseif input == "d1" then
       TallyUp:mysim("Death Blossom", 2)
     elseif input == "d2" then
@@ -881,13 +947,6 @@ MainFrame1:SetScript("OnDragStop", function(self)
 --  local TitleButton = CreateFrame("Button","TitleButton", MainFrame1, "UIGoldBorderButtonTemplate")
   TitleButton:SetHeight(24)
   TitleButton:SetWidth(180)
---Odds and ends while ironing out the bumps with texture
---mynormal:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
---mynormal:SetTexture("Interface\AddOns\TallyUp\Icons\Locked")
---mynormal:SetTexture("Interface/Buttons/LockButton-Locked-up")
---mynormal:SetTexCoord(-4, 0.9, 0, 1)
---TitleButton:SetNormalTexture([[Interface\AddOns\TallyUp\Icons\Locked]])
---TitleButton:SetNormalTexture([[Interface\Buttons\UI-SquareButton-Up]]);
 
   local unlockedTexture = TitleButton:CreateTexture()
   unlockedTexture:SetTexture([[Interface\AddOns\TallyUp\Icons\UnLocked]])
@@ -895,18 +954,6 @@ MainFrame1:SetScript("OnDragStop", function(self)
   unlockedTexture:SetAllPoints(TitleButton)
   TitleButton:SetNormalTexture(unlockedTexture)
 
---Start off unlocked, only deal with this when locking.
---It was causing both textures to be visible at startup.
---Did not take time to trouble shoot.
---local lockedTexture = TitleButton:CreateTexture()
---lockedTexture:SetTexture([[Interface\AddOns\TallyUp\Icons\Locked]])
---lockedTexture:SetTexCoord(10, -0.3, -0.3, 1.3)
---lockedTexture:SetAllPoints(TitleButton)
---TitleButton:SetNormalTexture(lockedTexture)
-
---Causing too much screen jitter around the button, not necessary!
---TitleButton:SetPushedTexture([[Interface\Buttons\UI-SquareButton-Down]]);
---TitleButton:SetHighlightTexture([[Interface\Buttons\UI-Common-MouseHilight]]);
   TitleButton:SetPoint("BOTTOM", MainFrame1, "TOP", 0, 0)
   TitleButton.text = TitleButton:CreateFontString(nil,"OVERLAY", "GameFontNormal") 
   TitleButton.text:SetPoint("CENTER")
@@ -1113,11 +1160,12 @@ end
           end
           for i,v in pairs(cItemCnt) do
             --if _DBG1 == 1 then print("i=" .. i .. ", resourceName=<" .. resourceName .. ">, HerbName=<" .. HerbName .. ">") end
-
-            if string.find(resourceName,i) then
-              displayupdate(1, HerbName, HerbCnt, itemLink, tierLevel, itemId)
-              break
-            end
+            --if resourceName ~= "Scrambled Basilisk Eggs" then
+              if string.find(i, resourceName) then
+                displayupdate(1, HerbName, HerbCnt, itemLink, tierLevel, itemId)
+                break
+              end
+            --end
           end
         end
       end

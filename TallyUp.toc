@@ -1,8 +1,8 @@
-## Interface: 100002
+## Interface: 100005
 ## Title: TallyUp |cff00aa006.0|r
 ## Author: friarbison
 ## Notes: Tracks resources collected. |cffB90A04Created by: Friarbison |r
-## Version: 2.0.0.2.plus-beta
+## Version: 3.0.0.4
 ## SavedVariables: TallyupContent
 ## SavedVariablesPerCharacter: TallyupPlayerContent
 ## OptionalDeps: Ace3
