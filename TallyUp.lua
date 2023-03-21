@@ -144,6 +144,13 @@ local cItems  = {
   ["Frameless Lens 2"] = 0,  --Beta Dragonflight
   ["Frameless Lens 3"] = 0,  --Beta Dragonflight
   ["Salt Deposit"] = 0,  --Beta Dragonflight
+  ["Rousing Earth"] = 0,  --Beta Dragonflight
+  ["Rousing Fire"] = 0,  --Beta Dragonflight
+  ["Rousing Order"] = 0,  --Beta Dragonflight
+  ["Rousing Frost"] = 0,  --Beta Dragonflight
+  ["Rousing Air"] = 0,  --Beta Dragonflight
+  ["Rousing Decay"] = 0,  --Beta Dragonflight
+  ["Rousing Ire"] = 0,  --Beta Dragonflight
   ["Pebbled Rock Salts"] = 0,  --Beta Dragonflight
   ["Coarse Stone"] = 0,
   ["Rough Stone"] = 0,
@@ -688,6 +695,10 @@ function TallyUp:OnCommand(input)
         TallyUpStatus = "Active"
         self.Db.global.vStatus = false
         self.Db.profile.vStatus = true
+        MainMenuBar.EndCaps:Hide()
+        --PlayerFrame.PlayerFrameContainer:Hide()
+        --PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture:Hide()
+        --PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PlayerPortraitCornerIcon:Hide()
       end
     elseif input == "off" then
       if TallyUpStatus == "Active" then
@@ -758,6 +769,7 @@ function TallyUp:OnInitialize()
   LibStub("AceConfigDialog-3.0"):SetDefaultSize("TallyUp", 400, 250)
   self:RegisterChatCommand("TallyUp", "OnCommand")
   self.Db = LibStub("AceDB-3.0"):New("TallyupContent", defaults, true)
+  MainMenuBar.EndCaps:Hide()
 end
 
 function TallyUp:ADDON_LOADED()   
