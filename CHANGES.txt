@@ -73,3 +73,5 @@
 #            -   Wasn't reading the Reagent bags, missing those in the count.  Should be fixed.
 # V3.0.0.4   -   
 # 1/26/2023  -   Release 10.00.05 update.  Only changed the build # in the TOC.
+# V3.0.0.5   -   
+# 1/26/2023  -   Release 10.00.07 update.  Only changed the build # in the TOC.
