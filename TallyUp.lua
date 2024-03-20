@@ -13,7 +13,7 @@ local BlackFrame = CreateFrame("Frame","Black", ColorFrame, BackdropTemplateMixi
 local ClearButton = CreateFrame("Button", "ClearButton", MainFrame1)
 local PauseButton = CreateFrame("Button", "PauseButton", MainFrame1)
 local nFrame = CreateFrame("Frame","highlightLabels", MainFrame1, "BackdropTemplate")
-local FHeight, FWidth, MainFrame1Shown, TallyUpStatus, TallyUpVERSION, FrameLocked = 35, 144, 0, "Inactive", "3.0.0.6", 0
+local FHeight, FWidth, MainFrame1Shown, TallyUpStatus, TallyUpVERSION, FrameLocked = 35, 144, 0, "Inactive", "3.0.0.13", 0
 local _TotalCount, ReLoad = 0, 0
 local highlightLabels = {} 
 local STip = {}
@@ -21,6 +21,8 @@ local cItemCnt = {}
 local _CName, _DBG, _DBG1 = "", False, False
 
 local cItems  = {
+  -- Crafting Regents
+  ["Zaralek Glowspores"] = 0,
   --cata
   ["Lifegiving Seed"] = 0,
   ["Twilight Jasmine"] = 0,
@@ -440,11 +442,11 @@ local function ShowMyPoints(mframe)
   local point, relativeTo, relativePoint, xOfs, yOfs
   point, relativeTo, relativePoint, xOfs, yOfs = mframe:GetPoint()
   mFrameName = mframe:GetName()
-  print(mFrameName .. ": Point: " .. point)
+  --print(mFrameName .. ": Point: " .. point)
   --print("RelativeTo: " .. relativeTo:GetName(mframe))
-  print(mFrameName .. ": RelativePnt: " .. relativePoint)
-  print(mFrameName .. ": X: " .. xOfs)
-  print(mFrameName .. ": Y: " .. yOfs)
+  --print(mFrameName .. ": RelativePnt: " .. relativePoint)
+  --print(mFrameName .. ": X: " .. xOfs)
+  --print(mFrameName .. ": Y: " .. yOfs)
   return xOfs, yOfs, point
 end
 
@@ -630,6 +632,11 @@ local function CollectionState(state)
     PauseButton:SetText("resume")
     MainFrame1:UnregisterEvent("CHAT_MSG_LOOT")
     PauseButton:SetWidth(50)
+    local children = {MainFrame1:GetChildren()}
+
+    for i, child in ipairs(children) do
+	    print(i, child:GetObjectType(), child:GetName())
+    end
   else
     PauseButton:SetText("pause")
     MainFrame1:RegisterEvent("CHAT_MSG_LOOT")
@@ -720,7 +727,7 @@ function TallyUp:OnCommand(input)
       --print("TallyUp is " .. TallyUpStatus)
     elseif string.find(input,"add",1) then
       --displayupdate(1, HerbName, HerbCnt, itemLink, tierLevel, itemId)
-      print("Add function goes here.")
+      --print("Add function goes here.")
     elseif input == "d1" then
       TallyUp:mysim("Death Blossom", 2)
     elseif input == "d2" then

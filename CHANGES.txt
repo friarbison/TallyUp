@@ -77,3 +77,15 @@
 # 1/26/2023  -   Release 10.00.07 update.  Only changed the build # in the TOC.
 # V3.0.0.6   -   
 # 5/2/2023  -   Release 10.1.0 update.  Only changed the build # in the TOC.
+# V3.0.0.7   -   
+# 7/19/2023  -   Release 10.1.5 update.  Only changed the build # in the TOC.
+# V3.0.0.8
+# 9/18/2023  -   Release 10.1.7 update.  Only changed the build # in the TOC.
+# V3.0.0.9
+# 9/18/2023  -   Release 10.2.0 update.  Only changed the build # in the TOC.
+# V3.0.0.10
+# 1/16/2024  -   Release 10.2.5 update.  Only changed the build # in the TOC.
+# V3.0.0.12
+# 1/16/2024  -   Added the Zaralek Glowspores crafting regent to the tally.
+# V3.0.0.13
+# 3/19/2024  -   Release 10.2.6 update.  Only changed the build # in the TOC
